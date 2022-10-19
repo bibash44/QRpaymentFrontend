@@ -12,10 +12,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    int primaryColor = 0xFFCF2027;
     return MaterialApp(
       title: 'QRpay',
-      theme: ThemeData(primaryColor: Color(0x00CF2027)),
+      theme: ThemeData(primaryColor: Color(primaryColor)),
       home: Scaffold(
+        backgroundColor: Color(primaryColor),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -23,9 +25,8 @@ class MyApp extends StatelessWidget {
               child: Column(
                 children: [
                   Image.asset(
-                    'images/QRpay.png',
+                    'images/QR2.png',
                     fit: BoxFit.cover,
-                    width: 75,
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -35,12 +36,13 @@ class MyApp extends StatelessWidget {
                       icon: Tab(
                           icon: Image.asset(
                         "images/google.png",
+                        width: 30,
                         fit: BoxFit.fitHeight,
                       )),
                       label: const Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "Signin with google",
+                          "Sign-in with google",
                           style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                       ),
@@ -49,19 +51,38 @@ class MyApp extends StatelessWidget {
                           padding: const EdgeInsets.all(10),
                           shape: const RoundedRectangleBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(50)))),
+                                  BorderRadius.all(Radius.circular(15)))),
                     ),
                   ),
                   const SizedBox(height: 15),
-                  actionButtons("Login to continue", Icons.login, Colors.white,
-                      Colors.black, Colors.white),
+                  actionButtons("Sign-in to continue", Icons.login,
+                      Colors.white, Colors.black, Colors.white),
                   const SizedBox(height: 15),
-                  actionButtons(
-                      "Signup as new user",
-                      FontAwesomeIcons.userCircle,
-                      Colors.white,
-                      Colors.red,
-                      Colors.white),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {},
+                      icon: const FaIcon(
+                        FontAwesomeIcons.userAlt,
+                        size: 25,
+                        color: Colors.white,
+                      ),
+                      label: const Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Signup as new user",
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(primaryColor),
+                          padding: const EdgeInsets.all(20),
+                          shape: const RoundedRectangleBorder(
+                              side: BorderSide(color: Colors.white, width: 2),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)))),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -76,7 +97,7 @@ class MyApp extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: () async {},
-        icon: FaIcon(btnIcon, size: 30),
+        icon: FaIcon(btnIcon, size: 25),
         label: Align(
           alignment: Alignment.center,
           child: Text(
@@ -88,7 +109,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: btnColor,
             padding: const EdgeInsets.all(20),
             shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50)))),
+                borderRadius: BorderRadius.all(Radius.circular(15)))),
       ),
     );
   }
