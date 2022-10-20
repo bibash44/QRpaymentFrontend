@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:qr_pay/screens/signup.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -194,7 +195,7 @@ class _SigninState extends State<Signin> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Signin()));
+                                      builder: (context) => const Signup()));
                             },
                           ),
                         ]),
