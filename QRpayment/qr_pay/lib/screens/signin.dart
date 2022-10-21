@@ -12,6 +12,7 @@ class Signin extends StatefulWidget {
 class _SigninState extends State<Signin> {
   int primaryColor = 0xFFCF2027;
   bool makePasswordVisible = false;
+  // ignore: non_constant_identifier_names
   final SigninFormKey = GlobalKey<FormState>();
   String? email, password;
 
