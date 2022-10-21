@@ -20,6 +20,8 @@ class _SignupState extends State<Signup> {
   String _sessionToken = "326412";
   TextEditingController addressController = TextEditingController();
   var uuid = const Uuid();
+  bool makePasswordVisible = false;
+  bool isFormValidated = false;
 
   List<dynamic> placesList = [];
 
@@ -63,6 +65,15 @@ class _SignupState extends State<Signup> {
               padding: const EdgeInsets.fromLTRB(0, 60, 0, 0),
               child: Column(
                 children: [
+                  const SizedBox(height: 25),
+                  const Text(
+                    "Signup as new user",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 15),
                   SizedBox(
                     height: 500,
                     child: Card(
@@ -80,10 +91,14 @@ class _SignupState extends State<Signup> {
                               // print("completed");
                               // Send data to server
                             } else {
+                              setState(() {
+                                _currentstep += 1;
+                              });
+
                               if (signUpFormKey.currentState!.validate()) {
                                 signUpFormKey.currentState!.save();
                                 setState(() {
-                                  _currentstep += 1;
+                                  isFormValidated = true;
                                 });
                               } else {
                                 // Signupform not validated
@@ -118,8 +133,9 @@ class _SignupState extends State<Signup> {
                                           shape: const RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(5)))),
-                                      child:
-                                          Text(islastStep ? "Confirm" : "Next"),
+                                      child: Text(islastStep
+                                          ? "Confirm & submit"
+                                          : "Next"),
                                     ),
                                   ),
                                   const SizedBox(
@@ -158,7 +174,7 @@ class _SignupState extends State<Signup> {
                   ),
                   InkWell(
                     child: const Text(
-                      "Click here to login ",
+                      "Click here to sign in  ",
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                     onTap: () {
@@ -353,13 +369,123 @@ class _SignupState extends State<Signup> {
           state: _currentstep > 2 ? StepState.complete : StepState.indexed,
           isActive: _currentstep >= 2,
           title: const Text("Password"),
-          content: Container(),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Column(
+              children: [
+                TextFormField(
+                  obscureText: !makePasswordVisible,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Please enter your password *";
+                    } else if (!RegExp(
+                        // r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$')
+                        r'^[A-Za-z0-9]+$').hasMatch(value)) {
+                      return " Please enter only number and letters *";
+                    }
+                    return null;
+                  },
+                  onSaved: (newValue) => password = newValue,
+                  onChanged: (newValue) {
+                    signUpFormKey.currentState!.save();
+                    if (signUpFormKey.currentState!.validate()) {
+                    } else {}
+                  },
+                  decoration: InputDecoration(
+                      labelText: "Password",
+                      labelStyle:
+                          const TextStyle(color: Colors.black, fontSize: 16),
+                      prefixIcon: const Icon(Icons.lock_open_rounded),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          // Based on passwordVisible state choose the icon
+                          makePasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            makePasswordVisible = !makePasswordVisible;
+                          });
+                        },
+                      ),
+                      iconColor: Colors.black,
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 192, 192, 192),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 230, 230, 230)),
+                ),
+
+                // Confirm password form field
+                const SizedBox(height: 15),
+                TextFormField(
+                  obscureText: !makePasswordVisible,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Please re-enter your password *";
+                    } else if (value != password) {
+                      return "Please re-enter same password *";
+                    }
+                    return null;
+                  },
+                  onSaved: (newValue) => cpassword = newValue,
+                  onChanged: (newValue) {
+                    signUpFormKey.currentState!.save();
+                    if (signUpFormKey.currentState!.validate()) {
+                    } else {}
+                  },
+                  decoration: InputDecoration(
+                      labelText: "Confirm password",
+                      labelStyle:
+                          const TextStyle(color: Colors.black, fontSize: 16),
+                      prefixIcon: const Icon(Icons.lock_open_rounded),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          // Based on passwordVisible state choose the icon
+                          makePasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            makePasswordVisible = !makePasswordVisible;
+                          });
+                        },
+                      ),
+                      iconColor: Colors.black,
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 192, 192, 192),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 230, 230, 230)),
+                ),
+              ],
+            ),
+          ),
         ),
         Step(
           state: _currentstep > 3 ? StepState.complete : StepState.indexed,
           isActive: _currentstep >= 3,
           title: const Text("Complete"),
-          content: Container(),
+          content: Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: !isFormValidated
+                  ? const Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Form not validated, please validate to continue *",
+                        style: TextStyle(color: Colors.red),
+                      ))
+                  : null),
         ),
       ];
 }

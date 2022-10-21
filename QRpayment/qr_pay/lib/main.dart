@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/screens/signin.dart';
+import 'package:qr_pay/screens/signup.dart';
 
 void main() {
   runApp(const Landing());
@@ -108,7 +109,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () async {},
+                    onPressed: () async {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Signup()));
+                    },
                     icon: const FaIcon(
                       FontAwesomeIcons.userAlt,
                       size: 25,

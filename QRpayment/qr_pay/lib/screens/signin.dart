@@ -37,6 +37,14 @@ class _SigninState extends State<Signin> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 50),
+                  const Text(
+                    "Welcome back, please sign in to continue",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 15),
                   Card(
                     elevation: 5,
@@ -45,16 +53,8 @@ class _SigninState extends State<Signin> {
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(5),
                         child: Column(children: [
-                          const Text(
-                            "Signin",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-
                           const SizedBox(
                             height: 20,
                           ),
