@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "362550361011",
+    "project_id": "qr-payment-4cbda",
+    "storage_bucket": "qr-payment-4cbda.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362550361011:android:dfa7fbfc06f62ce3ab29c6",
+        "android_client_info": {
+          "package_name": "com.example.qr_pay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362550361011-k6ud4gmbav14kihr1opu8bnqnhklkss9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcBtRTvb1efKCRCN_ZfqtmYGe5YjY4SZY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362550361011-k6ud4gmbav14kihr1opu8bnqnhklkss9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
