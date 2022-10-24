@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:qr_pay/Utils/ExternalFunctions.dart';
+import 'package:qr_pay/screens/homepage.dart';
 import 'package:qr_pay/screens/signup.dart';
+import 'package:qr_pay/services/userAPI.dart';
 
 import '../Utils/CustomWidgets.dart';
 
@@ -185,7 +189,7 @@ class _SigninState extends State<Signin> {
                                     isLoading = true;
                                   });
                                   // Calling user Signin function to send user datas
-
+                                  signInUser(email, password);
                                 }
                               },
                               child: isLoading
@@ -229,5 +233,59 @@ class _SigninState extends State<Signin> {
         ),
       ),
     );
+  }
+
+  signInUser(email, password) async {
+    try {
+      var responseData = await UserApi().signInUser(email, password);
+
+      bool responseStatus = responseData['success'];
+      if (responseStatus == true) {
+        var userData = responseData['data'];
+        String _id = userData['_id'];
+        String _fullname = userData['fullname'];
+        String _email = userData['email'];
+        String _phonenumber = userData['phonenumber'];
+        String _address = userData['address'];
+
+        ExternalFunctions()
+            .saveUserData(_id, _fullname, _email, _phonenumber, _address);
+
+        setState(() {
+          isLoading = false;
+        });
+
+        Fluttertoast.showToast(
+            msg: responseData['msg'],
+            gravity: ToastGravity.CENTER_LEFT,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
+
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Homepage()));
+      } else if (responseStatus == false) {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(
+            msg: responseData['msg'],
+            gravity: ToastGravity.CENTER_LEFT,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: e.toString(),
+          gravity: ToastGravity.CENTER_LEFT,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 }

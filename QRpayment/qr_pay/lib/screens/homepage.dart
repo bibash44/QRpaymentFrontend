@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_pay/Auth/google_auth_service.dart';
 
@@ -23,9 +24,15 @@ class _HomepageState extends State<Homepage> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  Text(FirebaseAuth.instance.currentUser!.displayName!),
-                  Image.network(FirebaseAuth.instance.currentUser!.photoURL!),
-                  Text(FirebaseAuth.instance.currentUser!.email!),
+                  FirebaseAuth.instance.currentUser != null
+                      ? Column(
+                          children: [
+                            Text(FirebaseAuth
+                                .instance.currentUser!.displayName!),
+                            Text(FirebaseAuth.instance.currentUser!.email!),
+                          ],
+                        )
+                      : Text("Not a google user"),
                   ElevatedButton(
                       onPressed: () {
                         GoogleAuthService().googleSignOut();

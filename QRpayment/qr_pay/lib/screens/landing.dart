@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/Auth/google_auth_service.dart';
+import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/homepage.dart';
 import 'package:qr_pay/screens/signin.dart';
 import 'package:qr_pay/screens/signup.dart';
@@ -52,23 +53,9 @@ class _LandingPageState extends State<LandingPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () async {
-                      await GoogleAuthService().signInWithGoogle();
-                      if (FirebaseAuth.instance.currentUser!.displayName !=
-                              null &&
-                          FirebaseAuth.instance.currentUser!.email != null) {
-                        // ignore: use_build_context_synchronously
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return const Homepage();
-                          },
-                        ));
-                      }
-
-                      // final provider = Provider.of<GoogleSignInProvider>(
-                      //     context,
-                      //     listen: false);
-                      // provider.signinWIthGoogle();
+                    onPressed: () {
+                      ExternalFunctions()
+                          .signInWithGoogleAndRedirectToHomePage(context);
                     },
                     icon: Tab(
                         icon: Image.asset(

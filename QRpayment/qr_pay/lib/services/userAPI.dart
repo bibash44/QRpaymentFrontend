@@ -43,12 +43,48 @@ class UserApi {
     }
   }
 
-  Future signInUser(String email, String password) async {
+  Future signInUser(String email, password) async {
+    if (email.contains("@gmail.com")) {
+      password = null;
+    }
+
     var requestBody = jsonEncode({"email": email, "password": password});
 
     try {
-      http.Response response =
-          await http.post(Uri.parse('${url}user/signin'), body: requestBody);
+      http.Response response = await http.post(Uri.parse('${url}user/signin'),
+          body: requestBody, headers: requestHeaders);
+
+      if (response.statusCode == 200) {
+        String responseData = response.body;
+        var jsonDeocedResponse = jsonDecode(responseData);
+
+        return jsonDeocedResponse;
+      } else {}
+    } catch (e) {
+      var responseData = {
+        'msg': '$e Error connecting to internet ',
+        'success': false
+      };
+      print(e);
+
+      return responseData;
+    }
+  }
+
+  Future updateOrsignInWIthGoogle(
+      String email, String fullname, String phonenumber, String address) async {
+    var requestBody = jsonEncode({
+      "email": email,
+      "fullname": fullname,
+      "phonenumber": phonenumber,
+      "address": address
+    });
+
+    try {
+      http.Response response = await http.post(
+          Uri.parse('${url}user/updateorsigninwithgoogle'),
+          body: requestBody,
+          headers: requestHeaders);
 
       if (response.statusCode == 200) {
         String responseData = response.body;
