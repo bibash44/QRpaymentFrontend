@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_pay/Utils/CustomWidgets.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/signin.dart';
 import 'package:uuid/uuid.dart';
 
 import '../Auth/google_auth_service.dart';
+import '../services/userHelper.dart';
 import 'homepage.dart';
 
 class Signup extends StatefulWidget {
@@ -25,6 +28,7 @@ class _SignupState extends State<Signup> {
   bool makePasswordVisible = false;
   bool isFormValidated = false;
   bool isEmailGmail = false;
+  bool isLoading = false;
 
   List placesList = [];
 
@@ -353,6 +357,42 @@ class _SignupState extends State<Signup> {
         ),
       ];
 
+  registerUser() async {
+    try {
+      var resposeData = await UserApi().signUpUser(
+          fullname!, email!.toLowerCase(), phonenumber!, address!, password!);
+
+      bool responseStatus = resposeData['success'];
+      if (responseStatus == true) {
+        setState(() {
+          isLoading = false;
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => const Signin()));
+        });
+      } else if (responseStatus == false) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+
+      Fluttertoast.showToast(
+          msg: resposeData['msg'],
+          gravity: ToastGravity.CENTER_LEFT,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: e.toString(),
+          gravity: ToastGravity.CENTER_LEFT,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -392,6 +432,14 @@ class _SignupState extends State<Signup> {
                             if (lastStep) {
                               // print("completed");
                               // Send data to server
+                              if (signUpFormKey.currentState!.validate()) {
+                                signUpFormKey.currentState!.save();
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                // Calling user register function to send user datas
+                                registerUser();
+                              }
                             } else {
                               setState(() {
                                 _currentstep += 1;
@@ -435,9 +483,14 @@ class _SignupState extends State<Signup> {
                                           shape: const RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(5)))),
-                                      child: Text(islastStep
-                                          ? "Confirm & submit"
-                                          : "Next"),
+                                      child: isLoading
+                                          ? const SpinKitCircle(
+                                              color: Colors.white,
+                                              size: 30,
+                                            )
+                                          : Text(islastStep
+                                              ? "Confirm & submit"
+                                              : "Next"),
                                     ),
                                   ),
                                   const SizedBox(

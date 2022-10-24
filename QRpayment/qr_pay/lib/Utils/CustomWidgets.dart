@@ -17,7 +17,7 @@ class CustomWidgets {
         onTap: () async {
           await GoogleAuthService().signInWithGoogle();
           if (FirebaseAuth.instance.currentUser!.displayName != null &&
-              FirebaseAuth.instance.currentUser!.displayName != null) {
+              FirebaseAuth.instance.currentUser!.email != null) {
             // ignore: use_build_context_synchronously
             Navigator.push(context, MaterialPageRoute(
               builder: (context) {

@@ -53,27 +53,10 @@ class _LandingPageState extends State<LandingPage> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      // Navigator.pushNamed(context, '/signup');
-                      // if (GoogleAuthService().signInWithGoogle()) {
-                      //   Navigator.push(context, MaterialPageRoute(
-                      //     builder: (context) {
-                      //       return const Homepage();
-                      //     },
-                      //   ));
-                      // } else {
-                      //   const snackBar = SnackBar(
-                      //     content:
-                      //         Text('Something went wrong please try again'),
-                      //   );
-                      //   ScaffoldMessenger.of(context)
-                      //       .showSnackBar(snackBar);
-                      // }
-
                       await GoogleAuthService().signInWithGoogle();
                       if (FirebaseAuth.instance.currentUser!.displayName !=
                               null &&
-                          FirebaseAuth.instance.currentUser!.displayName !=
-                              null) {
+                          FirebaseAuth.instance.currentUser!.email != null) {
                         // ignore: use_build_context_synchronously
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) {
