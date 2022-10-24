@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_pay/screens/homepage.dart';
 import 'package:qr_pay/screens/landing.dart';
-import 'package:qr_pay/screens/signin.dart';
 
 class GoogleAuthService {
   final googleSignIn = GoogleSignIn();
@@ -39,8 +38,8 @@ class GoogleAuthService {
           FirebaseAuth.instance.signInWithCredential(credential);
 
       return userSignedInWIthCredentail;
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
+      // print(e);
     }
   }
 

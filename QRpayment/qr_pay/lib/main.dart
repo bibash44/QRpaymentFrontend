@@ -1,13 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
+
 import 'package:qr_pay/Auth/google_auth_service.dart';
-import 'package:qr_pay/provider/google_sign_in.dart';
-import 'package:qr_pay/screens/homepage.dart';
-import 'package:qr_pay/screens/signin.dart';
-import 'package:qr_pay/screens/signup.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();

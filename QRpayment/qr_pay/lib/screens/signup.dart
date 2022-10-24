@@ -1,9 +1,12 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_pay/Utils/CustomWidgets.dart';
+import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/signin.dart';
 import 'package:uuid/uuid.dart';
-import 'package:http/http.dart' as http;
+
+import '../Auth/google_auth_service.dart';
+import 'homepage.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -17,13 +20,13 @@ class _SignupState extends State<Signup> {
   int _currentstep = 0;
   final signUpFormKey = GlobalKey<FormState>();
   String? fullname, phonenumber, email, address, password, cpassword;
-  String _sessionToken = "326412";
   TextEditingController addressController = TextEditingController();
   var uuid = const Uuid();
   bool makePasswordVisible = false;
   bool isFormValidated = false;
+  bool isEmailGmail = false;
 
-  List<dynamic> placesList = [];
+  List placesList = [];
 
   @override
   void initState() {
@@ -31,164 +34,10 @@ class _SignupState extends State<Signup> {
   }
 
   void getSuggestion(String query) async {
+    var response = await ExternalFunctions().getPlacesSuggestionAPI(query);
     setState(() {
-      _sessionToken = uuid.v4();
+      placesList = response;
     });
-    String placeApiKey = "AIzaSyB2Q4az6sbEyA5MZuqKlnoMw_2ZwkSJ_GY";
-    String baseUrl =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-    String request =
-        '$baseUrl?input=$query&key=$placeApiKey&sessiontoken=$_sessionToken';
-
-    var response = await http.get(Uri.parse(request));
-
-    if (response.statusCode == 200) {
-      setState(() {
-        placesList = jsonDecode(response.body.toString())["predictions"];
-      });
-    } else {
-      throw Exception("Failed to load places");
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            colorScheme: ColorScheme.fromSwatch()
-                .copyWith(primary: Color(primaryColor))),
-        home: Scaffold(
-          backgroundColor: Color(primaryColor),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 60, 0, 0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 25),
-                  const Text(
-                    "Signup as new user",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    height: 500,
-                    child: Card(
-                      elevation: 5,
-                      child: Form(
-                        key: signUpFormKey,
-                        child: Stepper(
-                          steps: getSteps(),
-                          type: StepperType.vertical,
-                          currentStep: _currentstep,
-                          onStepContinue: () {
-                            final lastStep =
-                                _currentstep == getSteps().length - 1;
-                            if (lastStep) {
-                              // print("completed");
-                              // Send data to server
-                            } else {
-                              setState(() {
-                                _currentstep += 1;
-                              });
-
-                              if (signUpFormKey.currentState!.validate()) {
-                                signUpFormKey.currentState!.save();
-                                setState(() {
-                                  isFormValidated = true;
-                                });
-                              } else {
-                                // Signupform not validated
-                              }
-                            }
-                          },
-                          onStepCancel: () {
-                            _currentstep == 0
-                                ? null
-                                : setState(() {
-                                    _currentstep -= 1;
-                                  });
-                          },
-                          onStepTapped: (step) {
-                            setState(() {
-                              _currentstep = step;
-                            });
-                          },
-                          controlsBuilder: (context, details) {
-                            final islastStep =
-                                _currentstep == getSteps().length - 1;
-                            return Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: details.onStepContinue,
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.black,
-                                          padding: const EdgeInsets.all(15),
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5)))),
-                                      child: Text(islastStep
-                                          ? "Confirm & submit"
-                                          : "Next"),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 15,
-                                  ),
-                                  if (_currentstep != 0)
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        onPressed: details.onStepCancel,
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.white,
-                                            padding: const EdgeInsets.all(15),
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(5))),
-                                            side: const BorderSide(
-                                                color: Colors.black, width: 2)),
-                                        child: const Text(
-                                          "Back",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    "Already a member ? ",
-                    style: TextStyle(color: Colors.black, fontSize: 18),
-                  ),
-                  InkWell(
-                    child: const Text(
-                      "Click here to sign in  ",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Signin()));
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ));
   }
 
   Widget generateCard(BuildContext context, int index) {
@@ -261,7 +110,15 @@ class _SignupState extends State<Signup> {
                             r'^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$')
                         .hasMatch(value)) {
                       return "Please enter a valid email *";
+                    } else if (value.contains("@gmail.com")) {
+                      setState(() {
+                        isEmailGmail = true;
+                      });
+                      return "Your are using gmail, please signin through google ";
                     }
+                    setState(() {
+                      isEmailGmail = false;
+                    });
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
@@ -282,6 +139,13 @@ class _SignupState extends State<Signup> {
                       filled: true,
                       fillColor: Color.fromARGB(255, 230, 230, 230)),
                 ),
+                if (isEmailGmail)
+                  Column(
+                    children: [
+                      const SizedBox(height: 5),
+                      CustomWidgets().linkTosignInWithGoogle(context)
+                    ],
+                  ),
                 const SizedBox(height: 15),
                 TextFormField(
                   validator: (value) {
@@ -488,4 +352,144 @@ class _SignupState extends State<Signup> {
                   : null),
         ),
       ];
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            colorScheme: ColorScheme.fromSwatch()
+                .copyWith(primary: Color(primaryColor))),
+        home: Scaffold(
+          backgroundColor: Color(primaryColor),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 60, 0, 0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 25),
+                  const Text(
+                    "Signup as new user",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 15),
+                  SizedBox(
+                    height: 500,
+                    child: Card(
+                      elevation: 5,
+                      child: Form(
+                        key: signUpFormKey,
+                        child: Stepper(
+                          steps: getSteps(),
+                          type: StepperType.vertical,
+                          currentStep: _currentstep,
+                          onStepContinue: () {
+                            final lastStep =
+                                _currentstep == getSteps().length - 1;
+                            if (lastStep) {
+                              // print("completed");
+                              // Send data to server
+                            } else {
+                              setState(() {
+                                _currentstep += 1;
+                              });
+
+                              if (signUpFormKey.currentState!.validate()) {
+                                signUpFormKey.currentState!.save();
+                                setState(() {
+                                  isFormValidated = true;
+                                });
+                              } else {
+                                // Signupform not validated
+                              }
+                            }
+                          },
+                          onStepCancel: () {
+                            _currentstep == 0
+                                ? null
+                                : setState(() {
+                                    _currentstep -= 1;
+                                  });
+                          },
+                          onStepTapped: (step) {
+                            setState(() {
+                              _currentstep = step;
+                            });
+                          },
+                          controlsBuilder: (context, details) {
+                            final islastStep =
+                                _currentstep == getSteps().length - 1;
+                            return Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: details.onStepContinue,
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.black,
+                                          padding: const EdgeInsets.all(15),
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(5)))),
+                                      child: Text(islastStep
+                                          ? "Confirm & submit"
+                                          : "Next"),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  if (_currentstep != 0)
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: details.onStepCancel,
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.white,
+                                            padding: const EdgeInsets.all(15),
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(5))),
+                                            side: const BorderSide(
+                                                color: Colors.black, width: 2)),
+                                        child: const Text(
+                                          "Back",
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    "Already a member ? ",
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                  InkWell(
+                    child: const Text(
+                      "Click here to sign in  ",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Signin()));
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
 }

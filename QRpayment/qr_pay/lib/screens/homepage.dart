@@ -30,7 +30,7 @@ class _HomepageState extends State<Homepage> {
                       onPressed: () {
                         GoogleAuthService().googleSignOut();
                       },
-                      child: Text("Logout"))
+                      child: const Text("Logout"))
                 ],
               ),
             )));

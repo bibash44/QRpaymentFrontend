@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:qr_pay/screens/signup.dart';
 
+import '../Utils/CustomWidgets.dart';
+
 class Signin extends StatefulWidget {
   const Signin({super.key});
 
@@ -18,6 +20,8 @@ class _SigninState extends State<Signin> {
 
   bool isSigninButtonDisbaled = true;
   bool isLoading = false;
+  bool isEmailGmail = false;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -61,7 +65,7 @@ class _SigninState extends State<Signin> {
 
                           // Email form field for Signin
 
-                          const SizedBox(height: 35),
+                          const SizedBox(height: 15),
                           TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -70,7 +74,15 @@ class _SigninState extends State<Signin> {
                                       r'^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$')
                                   .hasMatch(value)) {
                                 return "Please enter valid email";
+                              } else if (value.contains("@gmail.com")) {
+                                setState(() {
+                                  isEmailGmail = true;
+                                });
+                                return "Your are using gmail, please signin through google ";
                               }
+                              setState(() {
+                                isEmailGmail = false;
+                              });
                               return null;
                             },
                             keyboardType: TextInputType.emailAddress,
@@ -93,10 +105,16 @@ class _SigninState extends State<Signin> {
                                 filled: true,
                                 fillColor: Color.fromARGB(255, 230, 230, 230)),
                           ),
-
+                          if (isEmailGmail)
+                            Column(
+                              children: [
+                                const SizedBox(height: 5),
+                                CustomWidgets().linkTosignInWithGoogle(context)
+                              ],
+                            ),
                           // Input form passowrd field
 
-                          const SizedBox(height: 35),
+                          const SizedBox(height: 15),
                           TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -105,6 +123,7 @@ class _SigninState extends State<Signin> {
                                   .hasMatch(value)) {
                                 return " Please enter only number and letters *";
                               }
+
                               return null;
                             },
                             obscureText: !makePasswordVisible,
@@ -146,7 +165,7 @@ class _SigninState extends State<Signin> {
                                     const Color.fromARGB(255, 230, 230, 230)),
                           ),
 
-                          const SizedBox(height: 35),
+                          const SizedBox(height: 15),
                           // Signin button
                           SizedBox(
                             width: double.infinity,
