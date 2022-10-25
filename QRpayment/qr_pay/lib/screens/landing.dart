@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/Auth/google_auth_service.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
-import 'package:qr_pay/screens/homepage.dart';
+import 'package:qr_pay/screens/navigation_page.dart';
 import 'package:qr_pay/screens/signin.dart';
 import 'package:qr_pay/screens/signup.dart';
 

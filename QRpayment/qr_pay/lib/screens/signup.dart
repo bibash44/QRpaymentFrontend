@@ -5,11 +5,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_pay/Utils/CustomWidgets.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/signin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../Auth/google_auth_service.dart';
 import '../services/userAPI.dart';
-import 'homepage.dart';
+import 'navigation_page.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -35,6 +36,7 @@ class _SignupState extends State<Signup> {
   @override
   void initState() {
     super.initState();
+    redirectLoggedInUserToHomePage();
   }
 
   void getSuggestion(String query) async {
@@ -544,5 +546,18 @@ class _SignupState extends State<Signup> {
             ),
           ),
         ));
+  }
+
+  redirectLoggedInUserToHomePage() async {
+    final sharedPreferenceUserData = await SharedPreferences.getInstance();
+
+    bool? isUserLoggedIn = sharedPreferenceUserData.getBool("_isUserLoggedIn");
+    String? _usertype = sharedPreferenceUserData.getString("_usertype");
+
+    if (isUserLoggedIn!) {
+      // ignore: use_build_context_synchronously
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const NavigationPage()));
+    }
   }
 }

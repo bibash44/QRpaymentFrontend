@@ -3,7 +3,8 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_pay/screens/homepage.dart';
+import 'package:qr_pay/screens/navigation_page.dart';
+import 'package:qr_pay/screens/landing.dart';
 import 'package:qr_pay/services/userAPI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -15,6 +16,7 @@ class ExternalFunctions {
   var uuid = const Uuid();
   String _sessionToken = "326412";
   List placesList = [];
+  var sharedPreferenceUserData;
 
   Future getPlacesSuggestionAPI(String query) async {
     _sessionToken = uuid.v4();
@@ -53,19 +55,20 @@ class ExternalFunctions {
           String _email = userData['email'];
           String _phonenumber = userData['phonenumber'];
           String _address = userData['address'];
+          String _usertype = "google";
 
-          ExternalFunctions()
-              .saveUserData(_id, _fullname, _email, _phonenumber, _address);
+          ExternalFunctions().saveUserDataAfterLogin(
+              _id, _fullname, _email, _phonenumber, _address, _usertype);
           // ignore: use_build_context_synchronously
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const Homepage()));
+              MaterialPageRoute(builder: (context) => const NavigationPage()));
         } else if (responseStatus == false) {}
       } catch (e) {}
 
       // ignore: use_build_context_synchronously
       Navigator.push(context, MaterialPageRoute(
         builder: (context) {
-          return const Homepage();
+          return const NavigationPage();
         },
       ));
     }
@@ -73,29 +76,40 @@ class ExternalFunctions {
 
   logoutUserFromTheSystem() async {}
 
-  saveUserData(_id, _fullname, _email, _phonenumber, _address) async {
-    final sharedPreferenceUserData = await SharedPreferences.getInstance();
+  logoutUser(context) async {
+    sharedPreferenceUserData = await SharedPreferences.getInstance();
+
+    sharedPreferenceUserData.clear();
+    sharedPreferenceUserData.setBool("_isUserLoggedIn", false);
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const LandingPage()));
+  }
+
+  saveUserDataAfterLogin(
+      _id, _fullname, _email, _phonenumber, _address, _usertype) async {
+    sharedPreferenceUserData = await SharedPreferences.getInstance();
 
     sharedPreferenceUserData.setString("_id", _id);
     sharedPreferenceUserData.setString("_fullname", _fullname);
     sharedPreferenceUserData.setString("_email", _email);
     sharedPreferenceUserData.setString("_phone", _phonenumber);
-    sharedPreferenceUserData.setString("_dob", _address);
+    sharedPreferenceUserData.setString("_address", _address);
+    sharedPreferenceUserData.setString("_usertype", _usertype);
     sharedPreferenceUserData.setBool("_isUserLoggedIn", true);
   }
 
-  getUserLoggedInStatus(context) async {
-    final sharedPreferenceUserData = await SharedPreferences.getInstance();
+  getUserLoggedInStatus() async {
+    sharedPreferenceUserData = await SharedPreferences.getInstance();
 
     bool? isUserLoggedIn = sharedPreferenceUserData.getBool("_isUserLoggedIn");
+    return isUserLoggedIn;
+  }
 
-    if (isUserLoggedIn == true) {
-      // ignore: use_build_context_synchronously
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Homepage(),
-          ));
-    }
+  getLoggedInUserType() async {
+    sharedPreferenceUserData = await SharedPreferences.getInstance();
+
+    String? _usertype = sharedPreferenceUserData.getString("_usertype");
+    return _usertype;
   }
 }

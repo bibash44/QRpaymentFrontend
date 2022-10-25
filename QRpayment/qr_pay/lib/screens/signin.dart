@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
-import 'package:qr_pay/screens/homepage.dart';
+import 'package:qr_pay/screens/navigation_page.dart';
 import 'package:qr_pay/screens/signup.dart';
 import 'package:qr_pay/services/userAPI.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Utils/CustomWidgets.dart';
 
@@ -25,6 +26,13 @@ class _SigninState extends State<Signin> {
   bool isSigninButtonDisbaled = true;
   bool isLoading = false;
   bool isEmailGmail = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    redirectLoggedInUserToHomePage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +255,10 @@ class _SigninState extends State<Signin> {
         String _email = userData['email'];
         String _phonenumber = userData['phonenumber'];
         String _address = userData['address'];
+        String _usertype = "normal";
 
-        ExternalFunctions()
-            .saveUserData(_id, _fullname, _email, _phonenumber, _address);
+        ExternalFunctions().saveUserDataAfterLogin(
+            _id, _fullname, _email, _phonenumber, _address, _usertype);
 
         setState(() {
           isLoading = false;
@@ -264,8 +273,8 @@ class _SigninState extends State<Signin> {
             fontSize: 16.0);
 
         // ignore: use_build_context_synchronously
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const Homepage()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const NavigationPage()));
       } else if (responseStatus == false) {
         setState(() {
           isLoading = false;
@@ -286,6 +295,19 @@ class _SigninState extends State<Signin> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
+    }
+  }
+
+  redirectLoggedInUserToHomePage() async {
+    final sharedPreferenceUserData = await SharedPreferences.getInstance();
+
+    bool? isUserLoggedIn = sharedPreferenceUserData.getBool("_isUserLoggedIn");
+    String? _usertype = sharedPreferenceUserData.getString("_usertype");
+
+    if (isUserLoggedIn!) {
+      // ignore: use_build_context_synchronously
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const NavigationPage()));
     }
   }
 }
