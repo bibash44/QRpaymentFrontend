@@ -1,14 +1,14 @@
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class QRScan extends StatefulWidget {
-  const QRScan({super.key});
+class Statements extends StatefulWidget {
+  const Statements({super.key});
 
   @override
-  State<QRScan> createState() => _QRScanState();
+  State<Statements> createState() => _StatementsState();
 }
 
-class _QRScanState extends State<QRScan> {
+class _StatementsState extends State<Statements> {
   @override
   Widget build(BuildContext context) {
     return Container();

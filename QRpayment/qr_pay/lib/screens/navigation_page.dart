@@ -5,8 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:qr_pay/Auth/google_auth_service.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
+import 'package:qr_pay/components/homepage.dart';
 import 'package:qr_pay/components/profile.dart';
-import 'package:qr_pay/components/qr_scan.dart';
+import 'package:qr_pay/components/statements.dart';
+import 'package:qr_pay/screens/qr_scan.dart';
 import 'package:qr_pay/screens/landing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,8 +24,9 @@ class _NavigationPageState extends State<NavigationPage> {
   bool isUserLoggedIn = false;
   int _index = 0;
   final bottomNavigationPages = [
+    Homepage(),
+    Statements(),
     Profile(),
-    QRScan(),
   ];
 
   @override
@@ -58,7 +61,19 @@ class _NavigationPageState extends State<NavigationPage> {
                     FontAwesomeIcons.powerOff,
                     size: 20,
                     color: Colors.black,
-                  ))
+                  )),
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const QRScan()));
+                  },
+                  icon: const Icon(
+                    Icons.qr_code_2,
+                    size: 30,
+                    color: Color(0xFFCF2027),
+                  )),
             ],
           ),
           bottomNavigationBar: Container(
@@ -88,15 +103,15 @@ class _NavigationPageState extends State<NavigationPage> {
                 tabs: const [
                   GButton(
                     icon: Icons.home_filled,
-                    text: 'Navigation',
+                    text: 'Home',
                   ),
                   GButton(
-                    icon: Icons.qr_code_2,
-                    text: 'SCAN',
+                    icon: Icons.event_note_rounded,
+                    text: 'Statement',
                   ),
                   GButton(
                     icon: FontAwesomeIcons.userAlt,
-                    text: 'QRPay',
+                    text: 'Profile',
                   ),
                 ],
                 selectedIndex: _index,

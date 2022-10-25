@@ -37,6 +37,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'QRpay',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
             primaryColor: Color(primaryColor),
             colorScheme: ColorScheme.fromSwatch()
