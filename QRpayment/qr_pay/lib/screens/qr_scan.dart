@@ -1,15 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:qr_pay/Utils/ExternalFunctions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QRScan extends StatefulWidget {
   const QRScan({super.key});
@@ -22,9 +26,12 @@ class _QRScanState extends State<QRScan> {
   int primaryColor = 0xFFCF2027;
   final qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? qrViewController;
-  Barcode? result;
+  Barcode? qrResult;
   QRViewController? controller;
   bool isCameraPaused = false;
+  var sharedPreferenceUserData;
+
+  String? id, fullname, email, phonenumber, address;
 
   @override
   void reassemble() async {
@@ -36,6 +43,18 @@ class _QRScanState extends State<QRScan> {
     } else {
       qrViewController!.resumeCamera();
     }
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    getAndSetLoggedInUserDetails();
+    super.initState();
   }
 
   @override
@@ -72,9 +91,11 @@ class _QRScanState extends State<QRScan> {
                               const SizedBox(
                                 height: 15,
                               ),
-                              if (result != null)
+                              if (qrResult != null)
                                 ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      verifyQrAndContinueToPayment();
+                                    },
                                     // ignore: sort_child_properties_last
                                     child: const Text(
                                       "QR scanned, continue to payment",
@@ -90,7 +111,7 @@ class _QRScanState extends State<QRScan> {
                                                 Radius.circular(15)))))
 
                               // Text(
-                              //     'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
+                              //     'Barcode Type: ${describeEnum(qrResult!.format)}   Data: ${qrResult!.code}')
                               else
                                 const Text(
                                   'Scan a code',
@@ -113,7 +134,7 @@ class _QRScanState extends State<QRScan> {
                                       onPressed: () async {
                                         await controller?.resumeCamera();
                                         setState(() {
-                                          result = null;
+                                          qrResult = null;
                                         });
                                       },
                                     ),
@@ -202,7 +223,22 @@ class _QRScanState extends State<QRScan> {
                               color: Colors.black,
                               fontWeight: FontWeight.bold)),
                       const SizedBox(height: 15),
-                      generateQRCode(),
+                      if (fullname != null && id != null)
+                        generateQRCode()
+                      else
+                        Column(
+                          children: const [
+                            Text(
+                              "Unable to load QR code",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            SizedBox(height: 10),
+                            SpinKitCubeGrid(
+                              color: Colors.black,
+                              size: 250,
+                            )
+                          ],
+                        ),
                       const SizedBox(height: 15),
                       const Text(
                           "This code can be scanned by other users to pay you",
@@ -220,7 +256,8 @@ class _QRScanState extends State<QRScan> {
   }
 
   Widget generateQRCode() {
-    return QrImage(data: "bibash", size: 200);
+    var data = {"_id": id, "fullname": fullname};
+    return QrImage(data: jsonEncode(data), size: 250);
   }
 
   Widget _buildQrView(BuildContext context) {
@@ -243,7 +280,7 @@ class _QRScanState extends State<QRScan> {
     });
     controller.scannedDataStream.listen((scanData) {
       setState(() {
-        result = scanData;
+        qrResult = scanData;
       });
     });
   }
@@ -257,9 +294,70 @@ class _QRScanState extends State<QRScan> {
     }
   }
 
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
+  getAndSetLoggedInUserDetails() async {
+    sharedPreferenceUserData = await SharedPreferences.getInstance();
+
+    String? _fullname = sharedPreferenceUserData.getString("_fullname");
+    String? _id = sharedPreferenceUserData.getString("_id");
+
+    setState(() {
+      fullname = _fullname;
+      id = _id;
+    });
+    print("nameandid  $fullname   $_id");
+  }
+
+  verifyQrAndContinueToPayment() {
+    var qrscannedData = qrResult!.code.toString();
+    // var jsonDecodedQrData = jsonDecode(qrscannedData);
+
+    if (qrscannedData.contains("_id") && qrscannedData.contains("fullname")) {
+      print("correct qr data fromat");
+      var jsonDecodedQrData = jsonDecode(qrscannedData);
+      var qrId = jsonDecodedQrData['_id'].toString();
+      var qrFullname = jsonDecodedQrData['fullname'].toString();
+      if (qrId == id) {
+        Fluttertoast.showToast(
+            msg: 'You cannot pay yourself, please scan a different QR',
+            gravity: ToastGravity.CENTER_LEFT,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.grey,
+            textColor: Colors.white,
+            fontSize: 13.0);
+      }
+      setState(() {
+        qrResult = null;
+      });
+    } else {
+      print("incorrect qr data format");
+
+      Fluttertoast.showToast(
+          msg: 'Invalid QR code',
+          gravity: ToastGravity.CENTER_LEFT,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.grey,
+          textColor: Colors.white,
+          fontSize: 13.0);
+
+      setState(() {
+        qrResult = null;
+      });
+    }
+
+    // var qrId = jsonDecodedQrData['_id'].toString();
+    // var qrFullname = jsonDecodedQrData['fullname'].toString();
+
+    // if (qrId == id) {
+    //   Fluttertoast.showToast(
+    //       msg: 'You cannot pay yourself, please scan a different QR',
+    //       gravity: ToastGravity.CENTER_LEFT,
+    //       timeInSecForIosWeb: 5,
+    //       backgroundColor: Colors.grey,
+    //       textColor: Colors.white,
+    //       fontSize: 13.0);
+    // }
+    // setState(() {
+    //   qrResult = null;
+    // });
   }
 }

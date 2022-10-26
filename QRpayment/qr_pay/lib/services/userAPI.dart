@@ -71,7 +71,7 @@ class UserApi {
     }
   }
 
-  Future updateOrsignInWIthGoogle(
+  Future signInOrSignUpGoogleUser(
       String email, String fullname, String phonenumber, String address) async {
     var requestBody = jsonEncode({
       "email": email,
@@ -82,7 +82,7 @@ class UserApi {
 
     try {
       http.Response response = await http.post(
-          Uri.parse('${url}user/updateorsigninwithgoogle'),
+          Uri.parse('${url}user/signinorsignupgoogleuser'),
           body: requestBody,
           headers: requestHeaders);
 

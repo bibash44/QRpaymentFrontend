@@ -55,7 +55,7 @@ class _NavigationPageState extends State<NavigationPage> {
             actions: [
               IconButton(
                   onPressed: () {
-                    openLogoutDialouge();
+                    openSignoutDialouge();
                   },
                   icon: const Icon(
                     FontAwesomeIcons.powerOff,
@@ -131,16 +131,16 @@ class _NavigationPageState extends State<NavigationPage> {
 
   getUserLoggedInStatus() async {
     setState(() {
-      isUserLoggedIn = ExternalFunctions().getUserLoggedInStatus();
+      isUserLoggedIn = ExternalFunctions().getLoggedInUserStatus();
     });
   }
 
-  openLogoutDialouge() async {
+  openSignoutDialouge() async {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure to logout?'),
+        title: const Text('Signout'),
+        content: const Text('Are you sure to signout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -152,11 +152,11 @@ class _NavigationPageState extends State<NavigationPage> {
           TextButton(
             onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
-              ExternalFunctions().logoutUser(context);
+              ExternalFunctions().signoutUser(context);
               GoogleAuthService().googleSignOut();
             },
             child: Text(
-              'Logout',
+              'Signout',
               style: TextStyle(color: Color(primaryColor), fontSize: 18),
             ),
           )

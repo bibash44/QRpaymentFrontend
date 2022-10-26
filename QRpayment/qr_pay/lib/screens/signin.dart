@@ -270,7 +270,7 @@ class _SigninState extends State<Signin> {
             timeInSecForIosWeb: 5,
             backgroundColor: Colors.green,
             textColor: Colors.white,
-            fontSize: 16.0);
+            fontSize: 13.0);
 
         // ignore: use_build_context_synchronously
         Navigator.push(context,
@@ -283,18 +283,18 @@ class _SigninState extends State<Signin> {
             msg: responseData['msg'],
             gravity: ToastGravity.CENTER_LEFT,
             timeInSecForIosWeb: 5,
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.grey,
             textColor: Colors.white,
-            fontSize: 16.0);
+            fontSize: 13.0);
       }
     } catch (e) {
       Fluttertoast.showToast(
           msg: e.toString(),
           gravity: ToastGravity.CENTER_LEFT,
           timeInSecForIosWeb: 5,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.grey,
           textColor: Colors.white,
-          fontSize: 16.0);
+          fontSize: 13.0);
     }
   }
 

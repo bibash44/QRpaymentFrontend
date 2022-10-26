@@ -381,17 +381,17 @@ class _SignupState extends State<Signup> {
           msg: resposeData['msg'],
           gravity: ToastGravity.CENTER_LEFT,
           timeInSecForIosWeb: 5,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.grey,
           textColor: Colors.white,
-          fontSize: 16.0);
+          fontSize: 13.0);
     } catch (e) {
       Fluttertoast.showToast(
           msg: e.toString(),
           gravity: ToastGravity.CENTER_LEFT,
           timeInSecForIosWeb: 5,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.grey,
           textColor: Colors.white,
-          fontSize: 16.0);
+          fontSize: 13.0);
     }
   }
 
