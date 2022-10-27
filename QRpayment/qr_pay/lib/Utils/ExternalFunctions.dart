@@ -43,9 +43,7 @@ class ExternalFunctions {
       try {
         var responseData = await UserApi().signInOrSignUpGoogleUser(
             FirebaseAuth.instance.currentUser!.email!,
-            FirebaseAuth.instance.currentUser!.displayName!,
-            "",
-            "");
+            FirebaseAuth.instance.currentUser!.displayName!);
 
         // print("Response data " + responseData['data'].toString());
 
@@ -59,10 +57,13 @@ class ExternalFunctions {
           String _email = userData['email'];
           String _phonenumber = userData['phonenumber'];
           String _address = userData['address'];
+          int _totalamount = userData['totalamount'];
           String _usertype = "google";
 
+          print("totalamount" + _totalamount.toString());
+
           await saveUserDataAfterLogin(
-              _id, _fullname, _email, _phonenumber, _address, _usertype);
+              _id, _fullname, _email, _phonenumber, _address, _totalamount);
           // ignore: use_build_context_synchronously
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const NavigationPage()));
@@ -91,7 +92,7 @@ class ExternalFunctions {
   }
 
   saveUserDataAfterLogin(
-      _id, _fullname, _email, _phonenumber, _address, _usertype) async {
+      _id, _fullname, _email, _phonenumber, _address, _totalamount) async {
     sharedPreferenceUserData = await SharedPreferences.getInstance();
 
     // // print("name " + _fullname);
@@ -102,7 +103,7 @@ class ExternalFunctions {
     sharedPreferenceUserData.setString("_email", _email);
     sharedPreferenceUserData.setString("_phone", _phonenumber);
     sharedPreferenceUserData.setString("_address", _address);
-    sharedPreferenceUserData.setString("_usertype", _usertype);
+    sharedPreferenceUserData.setString("_totalamount", _totalamount);
     sharedPreferenceUserData.setBool("_isUserLoggedIn", true);
   }
 

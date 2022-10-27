@@ -13,13 +13,12 @@ class UserApi {
 
   Future signUpUser(String fullname, String email, String phonenumber,
       String address, String password) async {
-    print("USER: $fullname $email $phonenumber $address $password");
     var requestBody = jsonEncode({
       "fullname": fullname,
       "email": email,
       "phonenumber": phonenumber,
       "address": address,
-      "password": password
+      "password": password,
     });
 
     try {
@@ -71,14 +70,34 @@ class UserApi {
     }
   }
 
-  Future signInOrSignUpGoogleUser(
-      String email, String fullname, String phonenumber, String address) async {
-    var requestBody = jsonEncode({
-      "email": email,
-      "fullname": fullname,
-      "phonenumber": phonenumber,
-      "address": address
-    });
+  Future verifyQrData(String _id) async {
+    var requestBody = jsonEncode({"_id": _id});
+
+    try {
+      http.Response response = await http.post(
+          Uri.parse('${url}user/verifyqrdata'),
+          body: requestBody,
+          headers: requestHeaders);
+
+      if (response.statusCode == 200) {
+        String responseData = response.body;
+        var jsonDeocedResponse = jsonDecode(responseData);
+
+        return jsonDeocedResponse;
+      } else {}
+    } catch (e) {
+      var responseData = {
+        'msg': '$e Error connecting to internet ',
+        'success': false
+      };
+      print(e);
+
+      return responseData;
+    }
+  }
+
+  Future signInOrSignUpGoogleUser(String email, String fullname) async {
+    var requestBody = jsonEncode({"email": email, "fullname": fullname});
 
     try {
       http.Response response = await http.post(

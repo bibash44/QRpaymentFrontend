@@ -255,10 +255,10 @@ class _SigninState extends State<Signin> {
         String _email = userData['email'];
         String _phonenumber = userData['phonenumber'];
         String _address = userData['address'];
-        String _usertype = "normal";
+        int _totalamount = userData['totalamount'];
 
         ExternalFunctions().saveUserDataAfterLogin(
-            _id, _fullname, _email, _phonenumber, _address, _usertype);
+            _id, _fullname, _email, _phonenumber, _address, _totalamount);
 
         setState(() {
           isLoading = false;
