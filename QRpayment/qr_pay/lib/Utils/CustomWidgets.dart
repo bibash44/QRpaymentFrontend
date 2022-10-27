@@ -7,7 +7,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 
+import '../services/userAPI.dart';
+
 class CustomWidgets {
+  String? fullname;
+  int? totalAmount;
+
   Widget linkTosignInWithGoogle(context) {
     return Align(
       alignment: Alignment.topLeft,
@@ -64,59 +69,10 @@ class CustomWidgets {
     );
   }
 
-  Widget walletCard(fullname, totalAmount, context) {
-    return Container(
-      width: double.infinity,
-      height: 180,
-      child: Card(
-          child: Padding(
-        padding: EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Your wallet ",
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
-              const Divider(
-                color: Colors.grey,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text("£$totalAmount",
-                            style: const TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.bold)),
-                        const Text("Balance",
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        generateColorizedNameImage(context, fullname),
-                        SizedBox(height: 15),
-                        // ignore: prefer_interpolation_to_compose_strings
-                        Text(fullname,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      )),
-    );
-  }
-
   Widget generateColorizedNameImage(context, sendername) {
+    if (sendername == null || sendername == "") {
+      sendername = "XXX";
+    }
     bool googleuser = false;
     if (FirebaseAuth.instance.currentUser != null) {
       googleuser = true;

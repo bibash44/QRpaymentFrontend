@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/Utils/CustomWidgets.dart';
+import 'package:qr_pay/Utils/ExternalFunctions.dart';
 
 class StaticPayment extends StatefulWidget {
   String qId;
@@ -38,8 +39,7 @@ class _StaticPaymentState extends State<StaticPayment> {
               padding: EdgeInsets.all(10),
               child: Column(
                 children: <Widget>[
-                  CustomWidgets().walletCard(
-                      widget.senderName, widget.totalamount, context),
+                  walletCard(widget.senderName, widget.totalamount, context),
                   const SizedBox(height: 20),
                   CustomWidgets().paymentDetailsCard(
                       widget.qId, widget.qrFullname, widget.qRamount, context),
@@ -161,6 +161,59 @@ class _StaticPaymentState extends State<StaticPayment> {
               ),
             ),
           )),
+    );
+  }
+
+  Widget walletCard(fullname, totalAmount, context) {
+    return Container(
+      width: double.infinity,
+      height: 180,
+      child: Card(
+          child: Padding(
+        padding: EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Your wallet ",
+                  style: TextStyle(fontSize: 12, color: Colors.grey)),
+              const Divider(
+                color: Colors.grey,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        Text("£$totalAmount",
+                            style: const TextStyle(
+                                fontSize: 28, fontWeight: FontWeight.bold)),
+                        const Text("Balance",
+                            style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        CustomWidgets()
+                            .generateColorizedNameImage(context, fullname),
+                        SizedBox(height: 15),
+                        // ignore: prefer_interpolation_to_compose_strings
+                        Text(fullname,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      )),
     );
   }
 }

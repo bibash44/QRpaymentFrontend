@@ -23,7 +23,12 @@ class _NavigationPageState extends State<NavigationPage> {
   int primaryColor = 0xFFCF2027;
   bool isUserLoggedIn = false;
   int _index = 0;
-  final bottomNavigationPages = [
+  String? fullname, _id;
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+
+  var bottomNavigationPages = [
     Homepage(),
     Statements(),
     Profile(),
@@ -123,15 +128,15 @@ class _NavigationPageState extends State<NavigationPage> {
               ),
             ),
           ),
-          body: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
-              child: bottomNavigationPages[_index]),
+          body: bottomNavigationPages[_index],
         ));
   }
 
   getUserLoggedInStatus() async {
     setState(() {
       isUserLoggedIn = ExternalFunctions().getLoggedInUserStatus();
+      fullname = ExternalFunctions().getUserLoggedInFullname();
+      _id = ExternalFunctions().getUserLoggedInId();
     });
   }
 

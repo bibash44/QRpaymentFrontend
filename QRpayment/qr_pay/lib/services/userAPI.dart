@@ -70,6 +70,28 @@ class UserApi {
     }
   }
 
+  Future getUserData(String userid) async {
+    try {
+      http.Response response = await http.get(Uri.parse('${url}user/$userid'),
+          headers: requestHeaders);
+
+      if (response.statusCode == 200) {
+        String responseData = response.body;
+        var jsonDeocedResponse = jsonDecode(responseData);
+
+        return jsonDeocedResponse;
+      } else {}
+    } catch (e) {
+      var responseData = {
+        'msg': '$e Error connecting to internet ',
+        'success': false
+      };
+      print(e);
+
+      return responseData;
+    }
+  }
+
   Future verifyQrData(String receipentid, String senderid) async {
     var requestBody =
         jsonEncode({"receipentid": receipentid, "senderid": senderid});
