@@ -8,8 +8,12 @@ class StaticPayment extends StatefulWidget {
   String qId;
   String qrFullname;
   String qRamount;
+  String senderName;
+  int totalamount;
 
-  StaticPayment(this.qId, this.qrFullname, this.qRamount, {Key? key})
+  StaticPayment(this.qId, this.qrFullname, this.qRamount, this.senderName,
+      this.totalamount,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -34,12 +38,15 @@ class _StaticPaymentState extends State<StaticPayment> {
               padding: EdgeInsets.all(10),
               child: Column(
                 children: <Widget>[
+                  CustomWidgets().walletCard(
+                      widget.senderName, widget.totalamount, context),
+                  const SizedBox(height: 20),
                   CustomWidgets().paymentDetailsCard(
                       widget.qId, widget.qrFullname, widget.qRamount, context),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 20),
                   Container(
                     width: double.infinity,
-                    height: 350,
+                    height: 300,
                     child: Card(
                         child: Padding(
                       padding: EdgeInsets.all(10),

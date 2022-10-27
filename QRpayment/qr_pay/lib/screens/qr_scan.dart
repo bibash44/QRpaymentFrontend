@@ -228,7 +228,7 @@ class _QRScanState extends State<QRScan> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("QR PAY",
+                      const Text("YOUR QR PAY CODE",
                           style: TextStyle(
                               fontSize: 18,
                               color: Colors.black,
@@ -342,7 +342,7 @@ class _QRScanState extends State<QRScan> {
         });
       } else {
         print("correct qr data format");
-        checkRecipient(qrId, qrFullname, qRamount);
+        checkRecipient(qrId, qrFullname, qRamount, id);
       }
     } else {
       print("incorrect qr data format");
@@ -361,12 +361,14 @@ class _QRScanState extends State<QRScan> {
     }
   }
 
-  checkRecipient(qrId, qrFullname, qRamount) async {
+  checkRecipient(qrId, qrFullname, qRamount, senderid) async {
     try {
-      var responseData = await UserApi().verifyQrData(qrId);
+      var responseData = await UserApi().verifyQrData(qrId, senderid);
 
       bool responseStatus = responseData['success'];
       if (responseStatus == true) {
+        var senderdata = responseData['senderdata'];
+        int totalamount = senderdata['totalamount'];
         setState(() {
           isLoading = false;
         });
@@ -380,17 +382,19 @@ class _QRScanState extends State<QRScan> {
             fontSize: 13.0);
 
         controller!.pauseCamera();
+        // ignore: use_build_context_synchronously
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    StaticPayment(qrId, qrFullname, qRamount)));
+                builder: (context) => StaticPayment(
+                    qrId, qrFullname, qRamount, fullname!, totalamount)));
 
         // ignore: use_build_context_synchronously
 
       } else if (responseStatus == false) {
         setState(() {
           isLoading = false;
+          qrResult = null;
         });
         Fluttertoast.showToast(
             msg: responseData['msg'],

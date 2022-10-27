@@ -70,8 +70,9 @@ class UserApi {
     }
   }
 
-  Future verifyQrData(String _id) async {
-    var requestBody = jsonEncode({"_id": _id});
+  Future verifyQrData(String receipentid, String senderid) async {
+    var requestBody =
+        jsonEncode({"receipentid": receipentid, "senderid": senderid});
 
     try {
       http.Response response = await http.post(
