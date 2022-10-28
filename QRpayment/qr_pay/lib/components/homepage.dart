@@ -88,10 +88,18 @@ class _HomepageState extends State<Homepage> {
                   children: [
                     Column(
                       children: [
-                        Text(
+                        if (totalAmount.toString().length >= 6)
+                          Text(
                             "£${totalAmount.toString().replaceRange(6, totalAmount.toString().length, "")}",
                             style: const TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.bold)),
+                                fontSize: 28, fontWeight: FontWeight.bold),
+                          )
+                        else
+                          Text(
+                            "£${totalAmount.toString()}",
+                            style: const TextStyle(
+                                fontSize: 28, fontWeight: FontWeight.bold),
+                          ),
                         const Text("Balance",
                             style: TextStyle(fontSize: 12, color: Colors.grey)),
                       ],

@@ -7,7 +7,7 @@ import 'package:qr_pay/Auth/google_auth_service.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/components/homepage.dart';
 import 'package:qr_pay/components/profile.dart';
-import 'package:qr_pay/components/statements.dart';
+import 'package:qr_pay/components/Transaction.dart';
 import 'package:qr_pay/screens/qr_scan.dart';
 import 'package:qr_pay/screens/landing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +30,7 @@ class _NavigationPageState extends State<NavigationPage> {
 
   var bottomNavigationPages = [
     Homepage(),
-    Statements(),
+    Transaction(),
     Profile(),
   ];
 

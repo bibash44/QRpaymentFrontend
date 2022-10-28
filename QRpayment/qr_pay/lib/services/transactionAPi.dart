@@ -40,10 +40,10 @@ class TransactionApi {
     }
   }
 
-  Future getTransactionData(String transactionid) async {
+  Future getAllTransaction(String userid) async {
     try {
       http.Response response = await http.get(
-          Uri.parse('${url}transaction/$transactionid'),
+          Uri.parse('${url}transaction/getall/$userid'),
           headers: requestHeaders);
 
       if (response.statusCode == 200) {
@@ -63,40 +63,10 @@ class TransactionApi {
     }
   }
 
-  Future verifyQrData(String receipentid, String senderid) async {
-    var requestBody =
-        jsonEncode({"receipentid": receipentid, "senderid": senderid});
-
+  Future getSingleTransaction(String transactionid) async {
     try {
-      http.Response response = await http.post(
-          Uri.parse('${url}transaction/verifyqrdata'),
-          body: requestBody,
-          headers: requestHeaders);
-
-      if (response.statusCode == 200) {
-        String responseData = response.body;
-        var jsonDeocedResponse = jsonDecode(responseData);
-
-        return jsonDeocedResponse;
-      } else {}
-    } catch (e) {
-      var responseData = {
-        'msg': '$e Error connecting to internet ',
-        'success': false
-      };
-      print(e);
-
-      return responseData;
-    }
-  }
-
-  Future signInOrSignUpGoogleTransaction(String email, String fullname) async {
-    var requestBody = jsonEncode({"email": email, "fullname": fullname});
-
-    try {
-      http.Response response = await http.post(
-          Uri.parse('${url}transaction/signinorsignupgoogletransaction'),
-          body: requestBody,
+      http.Response response = await http.get(
+          Uri.parse('${url}transaction/getone/$transactionid'),
           headers: requestHeaders);
 
       if (response.statusCode == 200) {
