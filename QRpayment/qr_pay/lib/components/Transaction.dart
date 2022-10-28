@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:qr_pay/Model/userTransaction.dart';
+import 'package:qr_pay/screens/statement.dart';
 import 'package:qr_pay/services/transactionAPi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -15,8 +16,8 @@ class Transaction extends StatefulWidget {
 }
 
 class _TransactionState extends State<Transaction> {
-  String? fullname, id;
-  bool? isReceived;
+  String? fullname, userid;
+  bool isReceived = false;
   final searchController = TextEditingController();
   List<UserTransaction> allTransaction = [];
   List<UserTransaction> transactionList = [
@@ -67,14 +68,44 @@ class _TransactionState extends State<Transaction> {
   }
 
   Widget generateTransactionCard(index) {
-    String dateAndTime = transactionList[index].date.toString();
+    String? dateAndTime;
+    if (dateAndTime == null || dateAndTime == "") {
+      dateAndTime = "2022-10-27T23:22:16.026+00:00";
+    } else {
+      dateAndTime = transactionList[index].date.toString();
+    }
+
+    String? userIdToReceiveData;
+    bool? isReceived;
+
+    if (userid == transactionList[index].sender) {
+      userIdToReceiveData = transactionList[index].receipent!;
+      isReceived = false;
+    } else if (userid == transactionList[index].receipent) {
+      userIdToReceiveData = transactionList[index].sender!;
+      isReceived = true;
+    }
+
     var splitDateAndTime = dateAndTime.split('T');
     String date = splitDateAndTime[0];
     var splitTime = splitDateAndTime[1].split('.');
     String time = splitTime[0];
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Statement(
+                      userIdToReceiveData!,
+                      isReceived!,
+                      transactionList[index].id!,
+                      transactionList[index].amount!,
+                      date,
+                      time,
+                      transactionList[index].remarks!,
+                    )));
+      },
       child: Container(
         height: 150,
         child: Padding(
@@ -86,7 +117,7 @@ class _TransactionState extends State<Transaction> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if (id == transactionList[index].sender)
+                    if (userid == transactionList[index].receipent)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: const [
@@ -114,13 +145,12 @@ class _TransactionState extends State<Transaction> {
                           )
                         ],
                       ),
-                    const SizedBox(height: 5),
                     Text("£${transactionList[index].amount}",
                         style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 20)),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 10),
                     Text(date.toString(),
                         style:
                             const TextStyle(color: Colors.grey, fontSize: 15)),
@@ -145,7 +175,7 @@ class _TransactionState extends State<Transaction> {
 
     setState(() {
       fullname = _fullname;
-      id = _id;
+      userid = _id;
     });
 
     TransactionApi transactionAPi = TransactionApi();
