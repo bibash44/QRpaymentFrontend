@@ -35,7 +35,7 @@ class _QRScanState extends State<QRScan> {
   var sharedPreferenceUserData;
   bool isLoading = false;
 
-  String? id, fullname, email, phonenumber, address;
+  String? senderId, fullname, email, phonenumber, address;
 
   @override
   void reassemble() async {
@@ -98,20 +98,13 @@ class _QRScanState extends State<QRScan> {
                               if (qrResult != null)
                                 ElevatedButton(
                                     onPressed: () {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
                                       verifyQrAndContinueToPayment();
                                     },
                                     // ignore: sort_child_properties_last
-                                    child: isLoading
-                                        ? const SpinKitCircle(
-                                            color: Colors.black)
-                                        : const Text(
-                                            "QR scanned, continue to payment",
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
+                                    child: const Text(
+                                      "QR scanned, continue to payment",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.white,
                                         padding: const EdgeInsets.all(20),
@@ -234,7 +227,7 @@ class _QRScanState extends State<QRScan> {
                               color: Colors.black,
                               fontWeight: FontWeight.bold)),
                       const SizedBox(height: 15),
-                      if (fullname != null && id != null)
+                      if (fullname != null && senderId != null)
                         generateQRCode()
                       else
                         Column(
@@ -267,7 +260,7 @@ class _QRScanState extends State<QRScan> {
   }
 
   Widget generateQRCode() {
-    var data = {"_id": id, "fullname": fullname, "amount": 0};
+    var data = {"_id": senderId, "fullname": fullname, "amount": 0.0};
     return QrImage(data: jsonEncode(data), size: 250);
   }
 
@@ -313,26 +306,23 @@ class _QRScanState extends State<QRScan> {
 
     setState(() {
       fullname = _fullname;
-      id = _id;
+      senderId = _id;
     });
-    print("nameandid  $fullname   $_id");
   }
 
   verifyQrAndContinueToPayment() {
     var qrscannedData = qrResult!.code.toString();
-    // var jsonDecodedQrData = jsonDecode(qrscannedData);
-
     if (qrscannedData.contains("_id") && qrscannedData.contains("fullname")) {
-      // print("correct qr data fromat");
       var jsonDecodedQrData = jsonDecode(qrscannedData);
       String qrId = jsonDecodedQrData['_id'].toString();
       String qrFullname = jsonDecodedQrData['fullname'].toString();
-      String qRamount = jsonDecodedQrData['amount'].toString();
+      double qRamount = jsonDecodedQrData['amount'].toDouble();
 
-      if (qrId == id) {
+      if (qrId == senderId) {
         Fluttertoast.showToast(
             msg: 'You cannot pay yourself, please scan a different QR',
             gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
             timeInSecForIosWeb: 5,
             backgroundColor: Colors.grey,
             textColor: Colors.white,
@@ -342,7 +332,7 @@ class _QRScanState extends State<QRScan> {
         });
       } else {
         print("correct qr data format");
-        checkRecipient(qrId, qrFullname, qRamount, id);
+        checkRecipient(qrId, qrFullname, qRamount, senderId);
       }
     } else {
       print("incorrect qr data format");
@@ -350,6 +340,7 @@ class _QRScanState extends State<QRScan> {
       Fluttertoast.showToast(
           msg: 'Invalid QR code',
           gravity: ToastGravity.CENTER_LEFT,
+          toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
           backgroundColor: Colors.grey,
           textColor: Colors.white,
@@ -368,14 +359,12 @@ class _QRScanState extends State<QRScan> {
       bool responseStatus = responseData['success'];
       if (responseStatus == true) {
         var senderdata = responseData['senderdata'];
-        int totalamount = senderdata['totalamount'];
-        setState(() {
-          isLoading = false;
-        });
+        double totalamount = senderdata['totalamount'].toDouble();
 
         Fluttertoast.showToast(
             msg: responseData['msg'],
             gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
             timeInSecForIosWeb: 5,
             backgroundColor: Colors.green,
             textColor: Colors.white,
@@ -386,19 +375,19 @@ class _QRScanState extends State<QRScan> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => StaticPayment(
-                    qrId, qrFullname, qRamount, fullname!, totalamount)));
+                builder: (context) => StaticPayment(qrId, qrFullname, qRamount,
+                    fullname!, senderid!, totalamount)));
 
         // ignore: use_build_context_synchronously
 
       } else if (responseStatus == false) {
         setState(() {
-          isLoading = false;
           qrResult = null;
         });
         Fluttertoast.showToast(
             msg: responseData['msg'],
             gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
             timeInSecForIosWeb: 5,
             backgroundColor: Colors.grey,
             textColor: Colors.white,
@@ -408,6 +397,7 @@ class _QRScanState extends State<QRScan> {
       Fluttertoast.showToast(
           msg: e.toString(),
           gravity: ToastGravity.CENTER_LEFT,
+          toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
           backgroundColor: Colors.grey,
           textColor: Colors.white,

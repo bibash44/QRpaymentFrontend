@@ -57,10 +57,8 @@ class ExternalFunctions {
           String _email = userData['email'];
           String _phonenumber = userData['phonenumber'];
           String _address = userData['address'];
-          int _totalamount = userData['totalamount'];
+          double _totalamount = userData['totalamount'].toDouble();
           String _usertype = "google";
-
-          print("totalamount" + _totalamount.toString());
 
           await saveUserDataAfterLogin(
               _id, _fullname, _email, _phonenumber, _address, _totalamount);
@@ -93,66 +91,15 @@ class ExternalFunctions {
 
   saveUserDataAfterLogin(
       _id, _fullname, _email, _phonenumber, _address, _totalamount) async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    // // print("name " + _fullname);
-    // print("sachikeisaving $_fullname $_id $_email");
+    SharedPreferences sharedPreferenceUserData =
+        await SharedPreferences.getInstance();
 
     sharedPreferenceUserData.setString("_id", _id);
     sharedPreferenceUserData.setString("_fullname", _fullname);
     sharedPreferenceUserData.setString("_email", _email);
     sharedPreferenceUserData.setString("_phone", _phonenumber);
     sharedPreferenceUserData.setString("_address", _address);
-    sharedPreferenceUserData.setString("_totalamount", _totalamount);
+    sharedPreferenceUserData.setDouble("_totalamount", _totalamount);
     sharedPreferenceUserData.setBool("_isUserLoggedIn", true);
-  }
-
-  getUserLoggedInId() async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    String? id = sharedPreferenceUserData.getString("_id");
-    return id;
-  }
-
-  getUserLoggedInFullname() async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    String? fullname = sharedPreferenceUserData.getString("_fullname");
-    return fullname;
-  }
-
-  getUserLoggedInEmail() async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    String? email = sharedPreferenceUserData.getString("_email");
-    return email;
-  }
-
-  getUserLoggedInPhonenumber() async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    String? phonenumber = sharedPreferenceUserData.getString("_phonenumber");
-    return phonenumber;
-  }
-
-  getUserLoggedInAddress() async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    String? address = sharedPreferenceUserData.getString("_address");
-    return address;
-  }
-
-  getUserLoggedInUsertype() async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    String? usertype = sharedPreferenceUserData.getString("_usertype");
-    return usertype;
-  }
-
-  getLoggedInUserStatus() async {
-    sharedPreferenceUserData = await SharedPreferences.getInstance();
-
-    bool? isUserLoggedIn = sharedPreferenceUserData.getBool("_isUserLoggedIn");
-    return isUserLoggedIn;
   }
 }

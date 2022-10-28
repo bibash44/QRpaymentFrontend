@@ -21,7 +21,7 @@ class _HomepageState extends State<Homepage> {
   bool? isUserLoggedIn;
   String fullname = "";
   String _id = "";
-  int totalAmount = 0;
+  double totalAmount = 0.0;
 
   // ignore: non_constant_identifier_names
   _HomepageState() {
@@ -38,33 +38,21 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  getUserLoggedInStatus() async {
-    SharedPreferences sharedPreferenceUserData =
-        await SharedPreferences.getInstance();
-
-    String? userid = sharedPreferenceUserData.getString("_id");
-    bool? isUserLoggedIn = sharedPreferenceUserData.getBool("_isUserLoggedIn");
-
-    setState(() {
-      isUserLoggedIn = isUserLoggedIn;
-      _id = userid!;
-    });
-  }
-
   retriveLoggedInUserDatFromServer() async {
     SharedPreferences sharedPreferenceUserData =
         await SharedPreferences.getInstance();
 
     String? userid = sharedPreferenceUserData.getString("_id");
-    bool? isUserLoggedIn = sharedPreferenceUserData.getBool("_isUserLoggedIn");
 
-    var responseData = await UserApi().getUserData(userid!);
+    print("USERIDFORWALLETINFORMATION " + userid!);
+
+    var responseData = await UserApi().getUserData(userid);
 
     bool responseStatus = responseData['success'];
     if (responseStatus == true) {
       var userData = responseData['data'];
       String _fullname = userData['fullname'];
-      int _totalamount = userData['totalamount'];
+      double _totalamount = userData['totalamount'].toDouble();
 
       setState(() {
         fullname = _fullname;
@@ -100,7 +88,8 @@ class _HomepageState extends State<Homepage> {
                   children: [
                     Column(
                       children: [
-                        Text("£$totalAmount",
+                        Text(
+                            "£${totalAmount.toString().replaceRange(6, totalAmount.toString().length, "")}",
                             style: const TextStyle(
                                 fontSize: 28, fontWeight: FontWeight.bold)),
                         const Text("Balance",

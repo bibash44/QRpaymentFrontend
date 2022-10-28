@@ -133,10 +133,17 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   getUserLoggedInStatus() async {
+    SharedPreferences sharedPreferenceUserData =
+        await SharedPreferences.getInstance();
+
+    bool? _isUserLoggedIn = sharedPreferenceUserData.getBool("_isUserLoggedIn");
+    String? _fullname = sharedPreferenceUserData.getString("_fullname");
+    String? id = sharedPreferenceUserData.getString("_id");
+
     setState(() {
-      isUserLoggedIn = ExternalFunctions().getLoggedInUserStatus();
-      fullname = ExternalFunctions().getUserLoggedInFullname();
-      _id = ExternalFunctions().getUserLoggedInId();
+      isUserLoggedIn = _isUserLoggedIn!;
+      fullname = fullname;
+      _id = id;
     });
   }
 

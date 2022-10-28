@@ -359,7 +359,7 @@ class _SignupState extends State<Signup> {
         ),
       ];
 
-  registerUser() async {
+  signUpUser() async {
     try {
       var resposeData = await UserApi().signUpUser(
           fullname!, email!.toLowerCase(), phonenumber!, address!, password!);
@@ -380,6 +380,7 @@ class _SignupState extends State<Signup> {
       Fluttertoast.showToast(
           msg: resposeData['msg'],
           gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
           backgroundColor: Colors.grey,
           textColor: Colors.white,
@@ -388,6 +389,7 @@ class _SignupState extends State<Signup> {
       Fluttertoast.showToast(
           msg: e.toString(),
           gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
           backgroundColor: Colors.grey,
           textColor: Colors.white,
@@ -440,7 +442,7 @@ class _SignupState extends State<Signup> {
                                   isLoading = true;
                                 });
                                 // Calling user register function to send user datas
-                                registerUser();
+                                signUpUser();
                               }
                             } else {
                               setState(() {

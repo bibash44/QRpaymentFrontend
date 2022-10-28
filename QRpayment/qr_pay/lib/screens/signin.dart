@@ -248,6 +248,8 @@ class _SigninState extends State<Signin> {
       var responseData = await UserApi().signInUser(email, password);
 
       bool responseStatus = responseData['success'];
+      print(responseData['success']);
+
       if (responseStatus == true) {
         var userData = responseData['data'];
         String _id = userData['_id'];
@@ -255,7 +257,7 @@ class _SigninState extends State<Signin> {
         String _email = userData['email'];
         String _phonenumber = userData['phonenumber'];
         String _address = userData['address'];
-        int _totalamount = userData['totalamount'];
+        double _totalamount = userData['totalamount'].toDouble();
 
         ExternalFunctions().saveUserDataAfterLogin(
             _id, _fullname, _email, _phonenumber, _address, _totalamount);
@@ -267,6 +269,7 @@ class _SigninState extends State<Signin> {
         Fluttertoast.showToast(
             msg: responseData['msg'],
             gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
             timeInSecForIosWeb: 5,
             backgroundColor: Colors.green,
             textColor: Colors.white,
@@ -282,6 +285,7 @@ class _SigninState extends State<Signin> {
         Fluttertoast.showToast(
             msg: responseData['msg'],
             gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
             timeInSecForIosWeb: 5,
             backgroundColor: Colors.grey,
             textColor: Colors.white,
@@ -291,6 +295,7 @@ class _SigninState extends State<Signin> {
       Fluttertoast.showToast(
           msg: e.toString(),
           gravity: ToastGravity.CENTER_LEFT,
+          toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
           backgroundColor: Colors.grey,
           textColor: Colors.white,

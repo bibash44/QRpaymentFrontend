@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/Utils/CustomWidgets.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
+import 'package:qr_pay/screens/navigation_page.dart';
+import 'package:qr_pay/services/transactionAPi.dart';
 
 class StaticPayment extends StatefulWidget {
-  String qId;
+  String qrId;
   String qrFullname;
-  String qRamount;
+  double qRamount;
   String senderName;
-  int totalamount;
+  String senderId;
+  double totalamount;
 
-  StaticPayment(this.qId, this.qrFullname, this.qRamount, this.senderName,
-      this.totalamount,
+  StaticPayment(this.qrId, this.qrFullname, this.qRamount, this.senderName,
+      this.senderId, this.totalamount,
       {Key? key})
       : super(key: key);
 
@@ -25,6 +30,7 @@ class _StaticPaymentState extends State<StaticPayment> {
   int primaryColor = 0xFFCF2027;
   final paymentFormKey = GlobalKey<FormState>();
   String? remarks;
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,8 +47,7 @@ class _StaticPaymentState extends State<StaticPayment> {
                 children: <Widget>[
                   walletCard(widget.senderName, widget.totalamount, context),
                   const SizedBox(height: 20),
-                  CustomWidgets().paymentDetailsCard(
-                      widget.qId, widget.qrFullname, widget.qRamount, context),
+                  paymentDetailsCard(),
                   const SizedBox(height: 20),
                   Container(
                     width: double.infinity,
@@ -59,26 +64,32 @@ class _StaticPaymentState extends State<StaticPayment> {
                             children: [
                               TextFormField(
                                 validator: (value) {
-                                  if (value!.isEmpty) {
+                                  double calcValue = double.parse(value!);
+                                  if (value.isEmpty) {
                                     return "Please enter amount *";
-                                  } else if (!RegExp(r'^[1-9][0-9]*$')
+                                  } else if (!RegExp(
+                                          r'^\d{1,5}$|(?=^.{1,5}$)^\d+\.\d{0,3}$')
                                       .hasMatch(value)) {
                                     return "Please enter a valid amount *";
+                                  } else if (calcValue > widget.totalamount) {
+                                    return "You balance is less than the amount you are sending";
+                                  } else if (calcValue <= 0.1) {
+                                    return "Amount must be more than 0.1";
                                   }
                                   return null;
                                 },
                                 keyboardType: TextInputType.number,
                                 onSaved: (newValue) =>
-                                    widget.qRamount = newValue!,
+                                    widget.qRamount = double.parse(newValue!),
                                 onChanged: (newValue) {
-                                  if (widget.qRamount.isEmpty ||
+                                  if (widget.qRamount <= 0 ||
                                       widget.qRamount == "") {
                                     setState(() {
-                                      widget.qRamount = "0";
+                                      widget.qRamount = 0.0;
                                     });
                                   }
                                   setState(() {
-                                    widget.qRamount = newValue;
+                                    widget.qRamount = double.parse(newValue);
                                   });
 
                                   paymentFormKey.currentState!.save();
@@ -134,7 +145,13 @@ class _StaticPaymentState extends State<StaticPayment> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () async {},
+                                  onPressed: () async {
+                                    if (paymentFormKey.currentState!
+                                        .validate()) {
+                                      paymentFormKey.currentState!.save();
+                                      makeTranscation();
+                                    }
+                                  },
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Color(primaryColor),
                                       padding: const EdgeInsets.all(20),
@@ -142,13 +159,12 @@ class _StaticPaymentState extends State<StaticPayment> {
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(15)))),
                                   child: const Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      "Confirm and pay",
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                  ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "Confirm and pay",
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.white),
+                                      )),
                                 ),
                               ),
                             ],
@@ -189,7 +205,8 @@ class _StaticPaymentState extends State<StaticPayment> {
                   children: [
                     Column(
                       children: [
-                        Text("£$totalAmount",
+                        Text(
+                            "£${totalAmount.toString().replaceRange(6, totalAmount.toString().length, "")}",
                             style: const TextStyle(
                                 fontSize: 28, fontWeight: FontWeight.bold)),
                         const Text("Balance",
@@ -215,5 +232,94 @@ class _StaticPaymentState extends State<StaticPayment> {
         ),
       )),
     );
+  }
+
+  Widget paymentDetailsCard() {
+    return Container(
+      width: double.infinity,
+      height: 200,
+      child: Card(
+          child: Padding(
+        padding: EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Recipient details",
+                  style: TextStyle(fontSize: 12, color: Colors.grey)),
+              const Divider(
+                color: Colors.grey,
+              ),
+              Text("£${widget.qRamount}",
+                  style: const TextStyle(
+                      fontSize: 25, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Text(widget.qrFullname,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Text("QR ID : ${widget.qrId}",
+                  style: const TextStyle(fontSize: 18, color: Colors.grey)),
+              const SizedBox(height: 20),
+              const Text(
+                  "Note : Once the payment has been made, it can be reverted back, please send only to the person you know ",
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Color.fromARGB(255, 186, 186, 186),
+                      fontStyle: FontStyle.italic)),
+            ],
+          ),
+        ),
+      )),
+    );
+  }
+
+  makeTranscation() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var resposeData = await TransactionApi().makeTranscation(
+          widget.senderId, widget.qrId, widget.qRamount, remarks);
+
+      bool responseStatus = resposeData['success'];
+      if (responseStatus == true) {
+        Fluttertoast.showToast(
+            msg: resposeData['msg'],
+            gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 13.0);
+        setState(() {
+          isLoading = false;
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const NavigationPage()));
+        });
+      } else if (responseStatus == false) {
+        Fluttertoast.showToast(
+            msg: resposeData['msg'],
+            gravity: ToastGravity.CENTER_LEFT,
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIosWeb: 5,
+            backgroundColor: Colors.grey,
+            textColor: Colors.white,
+            fontSize: 13.0);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: e.toString(),
+          gravity: ToastGravity.CENTER_LEFT,
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIosWeb: 5,
+          backgroundColor: Colors.grey,
+          textColor: Colors.white,
+          fontSize: 13.0);
+    }
   }
 }
