@@ -16,9 +16,10 @@ class StaticPayment extends StatefulWidget {
   String senderName;
   String senderId;
   double totalamount;
+  bool isDynamic;
 
   StaticPayment(this.qrId, this.qrFullname, this.qRamount, this.senderName,
-      this.senderId, this.totalamount,
+      this.senderId, this.totalamount, this.isDynamic,
       {Key? key})
       : super(key: key);
 
@@ -51,127 +52,205 @@ class _StaticPaymentState extends State<StaticPayment> {
                   const SizedBox(height: 20),
                   Container(
                     width: double.infinity,
-                    height: 300,
-                    child: Card(
-                        child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: SingleChildScrollView(
-                        child: Form(
-                          key: paymentFormKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextFormField(
-                                validator: (value) {
-                                  double calcValue = double.parse(value!);
-                                  if (value.isEmpty) {
-                                    return "Please enter amount *";
-                                  } else if (!RegExp(
-                                          r'^\d{1,5}$|(?=^.{1,5}$)^\d+\.\d{0,3}$')
-                                      .hasMatch(value)) {
-                                    return "Please enter a valid amount *";
-                                  } else if (calcValue > widget.totalamount) {
-                                    return "You balance is less than the amount you are sending";
-                                  } else if (calcValue <= 0.1) {
-                                    return "Amount must be more than 0.1";
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.number,
-                                onSaved: (newValue) =>
-                                    widget.qRamount = double.parse(newValue!),
-                                onChanged: (newValue) {
-                                  if (widget.qRamount <= 0 ||
-                                      widget.qRamount == "") {
-                                    setState(() {
-                                      widget.qRamount = 0.0;
-                                    });
-                                  }
-                                  setState(() {
-                                    widget.qRamount = double.parse(newValue);
-                                  });
+                    height: widget.isDynamic ? null : 300,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // For dynamic payment
+                          widget.isDynamic
+                              ? SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      if (widget.totalamount <
+                                          widget.qRamount) {
+                                        Fluttertoast.showToast(
+                                            msg: "Not enough balance",
+                                            gravity: ToastGravity.CENTER_LEFT,
+                                            toastLength: Toast.LENGTH_LONG,
+                                            timeInSecForIosWeb: 5,
+                                            backgroundColor: Colors.grey,
+                                            textColor: Colors.white,
+                                            fontSize: 13.0);
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      } else {
+                                        makeTranscation();
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(primaryColor),
+                                        padding: const EdgeInsets.all(20),
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15)))),
+                                    child: const Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          "Pay",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white),
+                                        )),
+                                  ),
+                                )
 
-                                  paymentFormKey.currentState!.save();
-                                  if (paymentFormKey.currentState!.validate()) {
-                                  } else {}
-                                },
-                                decoration: const InputDecoration(
-                                    labelText: "Amount",
-                                    labelStyle: TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                    iconColor: Colors.black,
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromARGB(
-                                                255, 192, 192, 192))),
-                                    filled: true,
-                                    fillColor:
-                                        Color.fromARGB(255, 230, 230, 230)),
-                              ),
-                              const SizedBox(height: 20),
+                              //  Static payment
+                              : Card(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(15),
+                                    child: Form(
+                                      key: paymentFormKey,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TextFormField(
+                                            validator: (value) {
+                                              double calcValue =
+                                                  double.parse(value!);
+                                              if (value.isEmpty) {
+                                                return "Please enter amount *";
+                                              } else if (!RegExp(
+                                                      r'^\d{1,5}$|(?=^.{1,5}$)^\d+\.\d{0,3}$')
+                                                  .hasMatch(value)) {
+                                                return "Please enter a valid amount *";
+                                              } else if (calcValue >
+                                                  widget.totalamount) {
+                                                return "Not enough balance";
+                                              } else if (calcValue <= 0.1) {
+                                                return "Amount must be more than 0.1";
+                                              }
+                                              return null;
+                                            },
+                                            keyboardType: TextInputType.number,
+                                            onSaved: (newValue) =>
+                                                widget.qRamount =
+                                                    double.parse(newValue!),
+                                            onChanged: (newValue) {
+                                              if (widget.qRamount <= 0 ||
+                                                  widget.qRamount == "") {
+                                                setState(() {
+                                                  widget.qRamount = 0.0;
+                                                });
+                                              }
+                                              setState(() {
+                                                widget.qRamount =
+                                                    double.parse(newValue);
+                                              });
 
-                              TextFormField(
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return "Please enter remarks or purpose *";
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.multiline,
-                                maxLength: 80,
-                                maxLines: 3,
-                                onSaved: (newValue) => remarks = newValue,
-                                onChanged: (newValue) {
-                                  remarks = newValue;
-                                  paymentFormKey.currentState!.save();
-                                  if (paymentFormKey.currentState!.validate()) {
-                                  } else {}
-                                },
-                                decoration: const InputDecoration(
-                                    labelText: "Remarks or purpose",
-                                    labelStyle: TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromARGB(
-                                                255, 192, 192, 192))),
-                                    filled: true,
-                                    fillColor:
-                                        Color.fromARGB(255, 230, 230, 230)),
-                              ),
-                              SizedBox(height: 20),
-                              // Payment button
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (paymentFormKey.currentState!
-                                        .validate()) {
-                                      paymentFormKey.currentState!.save();
-                                      makeTranscation();
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(primaryColor),
-                                      padding: const EdgeInsets.all(20),
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(15)))),
-                                  child: const Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "Confirm and pay",
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.white),
-                                      )),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                                              paymentFormKey.currentState!
+                                                  .save();
+                                              if (paymentFormKey.currentState!
+                                                  .validate()) {
+                                              } else {}
+                                            },
+                                            decoration: const InputDecoration(
+                                                labelText: "Amount",
+                                                labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16),
+                                                iconColor: Colors.black,
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    192,
+                                                                    192,
+                                                                    192))),
+                                                filled: true,
+                                                fillColor: Color.fromARGB(
+                                                    255, 230, 230, 230)),
+                                          ),
+                                          const SizedBox(height: 20),
+
+                                          TextFormField(
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return "Please enter remarks or purpose *";
+                                              }
+                                              return null;
+                                            },
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            maxLength: 80,
+                                            maxLines: 3,
+                                            onSaved: (newValue) =>
+                                                remarks = newValue,
+                                            onChanged: (newValue) {
+                                              remarks = newValue;
+                                              paymentFormKey.currentState!
+                                                  .save();
+                                              if (paymentFormKey.currentState!
+                                                  .validate()) {
+                                              } else {}
+                                            },
+                                            decoration: const InputDecoration(
+                                                labelText: "Remarks or purpose",
+                                                labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    192,
+                                                                    192,
+                                                                    192))),
+                                                filled: true,
+                                                fillColor: Color.fromARGB(
+                                                    255, 230, 230, 230)),
+                                          ),
+                                          SizedBox(height: 20),
+                                          // Payment button
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                if (paymentFormKey.currentState!
+                                                    .validate()) {
+                                                  paymentFormKey.currentState!
+                                                      .save();
+                                                  makeTranscation();
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Color(primaryColor),
+                                                  padding:
+                                                      const EdgeInsets.all(20),
+                                                  shape:
+                                                      const RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          15)))),
+                                              child: const Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "Confirm and pay",
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        color: Colors.white),
+                                                  )),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+                        ],
                       ),
-                    )),
+                    ),
                   ),
                 ],
               ),

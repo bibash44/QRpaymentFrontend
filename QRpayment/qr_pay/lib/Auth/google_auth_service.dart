@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/navigation_page.dart';
 import 'package:qr_pay/screens/landing.dart';
 

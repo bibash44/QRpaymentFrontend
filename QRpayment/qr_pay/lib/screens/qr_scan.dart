@@ -13,6 +13,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
+import 'package:qr_pay/screens/navigation_page.dart';
 import 'package:qr_pay/screens/static_payment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -72,6 +73,14 @@ class _QRScanState extends State<QRScan> {
           length: 2,
           child: Scaffold(
             appBar: AppBar(
+              leading: BackButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NavigationPage()));
+                  }),
               bottom: const TabBar(
                 tabs: [
                   Tab(icon: Icon(Icons.camera_alt), text: "Scan"),
@@ -221,7 +230,7 @@ class _QRScanState extends State<QRScan> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("YOUR QR PAY CODE",
+                      const Text("YOUR QR CODE",
                           style: TextStyle(
                               fontSize: 18,
                               color: Colors.black,
@@ -260,7 +269,12 @@ class _QRScanState extends State<QRScan> {
   }
 
   Widget generateQRCode() {
-    var data = {"_id": senderId, "fullname": fullname, "amount": 0.0};
+    var data = {
+      "_id": senderId,
+      "fullname": fullname,
+      "amount": 0.0,
+      "dynamic": false
+    };
     return QrImage(data: jsonEncode(data), size: 250);
   }
 
@@ -317,6 +331,9 @@ class _QRScanState extends State<QRScan> {
       String qrId = jsonDecodedQrData['_id'].toString();
       String qrFullname = jsonDecodedQrData['fullname'].toString();
       double qRamount = jsonDecodedQrData['amount'].toDouble();
+      bool isDynamic = jsonDecodedQrData['dynamic'];
+
+      print(qRamount);
 
       if (qrId == senderId) {
         Fluttertoast.showToast(
@@ -332,7 +349,7 @@ class _QRScanState extends State<QRScan> {
         });
       } else {
         print("correct qr data format");
-        checkRecipient(qrId, qrFullname, qRamount, senderId);
+        checkRecipient(qrId, qrFullname, qRamount, senderId, isDynamic);
       }
     } else {
       print("incorrect qr data format");
@@ -352,7 +369,7 @@ class _QRScanState extends State<QRScan> {
     }
   }
 
-  checkRecipient(qrId, qrFullname, qRamount, senderid) async {
+  checkRecipient(qrId, qrFullname, qRamount, senderid, isDynamic) async {
     try {
       var responseData = await UserApi().verifyQrData(qrId, senderid);
 
@@ -376,7 +393,7 @@ class _QRScanState extends State<QRScan> {
             context,
             MaterialPageRoute(
                 builder: (context) => StaticPayment(qrId, qrFullname, qRamount,
-                    fullname!, senderid!, totalamount)));
+                    fullname!, senderid!, totalamount, isDynamic)));
 
         // ignore: use_build_context_synchronously
 

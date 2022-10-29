@@ -152,11 +152,19 @@ class _StatementState extends State<Statement> {
                       const SizedBox(height: 30),
                       const Text("Remarks :",
                           style: TextStyle(color: Colors.grey, fontSize: 16)),
-                      Text(widget.remarks,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18)),
+                      if (widget.remarks == null || widget.remarks == "")
+                        const Text("No remarks",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                                fontSize: 18))
+                      else
+                        Text(widget.remarks,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18))
                     ],
                   ),
                 ),

@@ -2,12 +2,10 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:qr_pay/Utils/CustomWidgets.dart';
+import 'package:qr_pay/screens/dynamic_dr.dart';
+import 'package:qr_pay/screens/qr_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Utils/ExternalFunctions.dart';
 import '../services/userAPI.dart';
 
 class Homepage extends StatefulWidget {
@@ -20,7 +18,6 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   bool? isUserLoggedIn;
   String fullname = "";
-  String _id = "";
   double totalAmount = 0.0;
 
   // ignore: non_constant_identifier_names
@@ -31,9 +28,13 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: avoid_unnecessary_containers
     return Container(
-      child: Column(
-        children: [walletCard()],
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          children: [walletCard(), userFunctions()],
+        ),
       ),
     );
   }
@@ -44,13 +45,14 @@ class _HomepageState extends State<Homepage> {
 
     String? userid = sharedPreferenceUserData.getString("_id");
 
-    print("USERIDFORWALLETINFORMATION " + userid!);
+    // print("USERIDFORWALLETINFORMATION " + userid!);
 
-    var responseData = await UserApi().getUserData(userid);
+    var responseData = await UserApi().getUserData(userid!);
 
     bool responseStatus = responseData['success'];
     if (responseStatus == true) {
       var userData = responseData['data'];
+      // ignore: no_leading_underscores_for_local_identifiers
       String _fullname = userData['fullname'];
       double _totalamount = userData['totalamount'].toDouble();
 
@@ -159,6 +161,63 @@ class _HomepageState extends State<Homepage> {
                 ),
               ),
       ),
+    );
+  }
+
+  Widget userFunctions() {
+    return Container(
+      width: double.infinity,
+      height: 180,
+      child: Card(
+          child: Padding(
+        padding: EdgeInsets.all(25),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const QRScan()));
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(Icons.qr_code_2_sharp,
+                            size: 35, color: Colors.green),
+                        Text("QR scan",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const DynamicQr()));
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(Icons.qr_code, size: 35, color: Colors.green),
+                        Text("Dynamic QR",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+      )),
     );
   }
 }
