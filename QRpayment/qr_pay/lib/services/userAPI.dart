@@ -42,6 +42,58 @@ class UserApi {
     }
   }
 
+  Future sendEmail(String email, String subject, String description) async {
+    var requestBody = jsonEncode({
+      "email": email,
+      "subject": subject,
+      "description": description,
+    });
+
+    try {
+      http.Response response = await http.post(
+          Uri.parse('${url}user/sendemail'),
+          body: requestBody,
+          headers: requestHeaders);
+
+      if (response.statusCode == 200) {
+        String responseData = response.body;
+        var jsonDeocedResponse = jsonDecode(responseData);
+
+        return jsonDeocedResponse;
+      } else {}
+    } catch (e) {
+      var responseData = {
+        'msg': '$e Error connecting to internet ',
+        'success': false
+      };
+      print(e);
+
+      return responseData;
+    }
+  }
+
+  Future updateUser(String userid, var requestBody) async {
+    try {
+      http.Response response = await http.put(Uri.parse('${url}user/$userid'),
+          body: requestBody, headers: requestHeaders);
+
+      if (response.statusCode == 200) {
+        String responseData = response.body;
+        var jsonDeocedResponse = jsonDecode(responseData);
+
+        return jsonDeocedResponse;
+      } else {}
+    } catch (e) {
+      var responseData = {
+        'msg': '$e Error connecting to internet ',
+        'success': false
+      };
+      print(e);
+
+      return responseData;
+    }
+  }
+
   Future signInUser(String email, password) async {
     if (email.contains("@gmail.com")) {
       password = null;
