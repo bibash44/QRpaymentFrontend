@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/screens/dynamic_qr.dart';
+import 'package:qr_pay/screens/load_wallet_from_card.dart';
 import 'package:qr_pay/screens/qr_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -223,7 +224,8 @@ class _HomepageState extends State<Homepage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const QRScan()));
+                              builder: (context) =>
+                                  const LoadWalletFromCard()));
                     },
                     child: Column(
                       children: const [
