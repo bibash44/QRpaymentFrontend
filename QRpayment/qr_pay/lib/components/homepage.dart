@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:qr_pay/screens/dynamic_dr.dart';
+import 'package:qr_pay/screens/dynamic_qr.dart';
 import 'package:qr_pay/screens/qr_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -94,9 +94,9 @@ class _HomepageState extends State<Homepage> {
                   children: [
                     Column(
                       children: [
-                        if (totalAmount.toString().length >= 6)
+                        if (totalAmount.toString().length >= 4)
                           Text(
-                            "£${totalAmount.toString().replaceRange(6, totalAmount.toString().length, "")}",
+                            "£${totalAmount.toString().replaceRange(4, totalAmount.toString().length, "")}",
                             style: const TextStyle(
                                 fontSize: 28, fontWeight: FontWeight.bold),
                           )

@@ -21,9 +21,9 @@ class _TransactionState extends State<Transaction> {
   final searchController = TextEditingController();
   List<UserTransaction> allTransaction = [];
   List<UserTransaction> transactionList = [
-    UserTransaction("xxx", "xxx", "xxx", 0.0, "xxx", "xxx"),
+    UserTransaction("xxx", "xxx", "xxx", 0.0, "xxx", "xxx", "xxx"),
   ];
-
+  String dateAndTime = "2022-10-30T01:13:41.900+00:00";
   _TransactionState() {
     loadTransaction();
   }
@@ -68,13 +68,6 @@ class _TransactionState extends State<Transaction> {
   }
 
   Widget generateTransactionCard(index) {
-    String? dateAndTime;
-    if (dateAndTime == null || dateAndTime == "") {
-      dateAndTime = "2022-10-27T23:22:16.026+00:00";
-    } else {
-      dateAndTime = transactionList[index].date.toString();
-    }
-
     String? userIdToReceiveData;
     bool? isReceived;
 
@@ -86,11 +79,6 @@ class _TransactionState extends State<Transaction> {
       isReceived = true;
     }
 
-    var splitDateAndTime = dateAndTime.split('T');
-    String date = splitDateAndTime[0];
-    var splitTime = splitDateAndTime[1].split('.');
-    String time = splitTime[0];
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -101,8 +89,8 @@ class _TransactionState extends State<Transaction> {
                       isReceived!,
                       transactionList[index].id!,
                       transactionList[index].amount!,
-                      date,
-                      time,
+                      transactionList[index].date!,
+                      transactionList[index].time!,
                       transactionList[index].remarks!,
                     )));
       },
@@ -151,11 +139,11 @@ class _TransactionState extends State<Transaction> {
                             fontWeight: FontWeight.bold,
                             fontSize: 20)),
                     const SizedBox(height: 10),
-                    Text(date.toString(),
+                    Text(transactionList[index].date.toString(),
                         style:
                             const TextStyle(color: Colors.grey, fontSize: 15)),
                     const SizedBox(height: 5),
-                    Text(time.toString(),
+                    Text(transactionList[index].time.toString(),
                         style:
                             const TextStyle(color: Colors.grey, fontSize: 13)),
                   ],
@@ -186,7 +174,8 @@ class _TransactionState extends State<Transaction> {
           data['data'][i]['sender'],
           data['data'][i]['recipient'],
           data['data'][i]['amount'].toDouble(),
-          data['data'][i]['date'],
+          data['data'][i]['date'].split('T')[0],
+          data['data'][i]['date'].split('T')[1].split('.')[0],
           data['data'][i]['remarks']));
     }
 

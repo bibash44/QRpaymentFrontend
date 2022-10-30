@@ -422,6 +422,14 @@ class _ProfileState extends State<Profile> {
                               onTap: () {
                                 openUpdateForm();
                               })
+                        else if (address.length >= 36)
+                          Text(
+                              address.toString().replaceRange(
+                                  36, address.toString().length, ". . ."),
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16))
                         else
                           Text(address,
                               style: const TextStyle(

@@ -284,9 +284,9 @@ class _StaticPaymentState extends State<StaticPayment> {
                   children: [
                     Column(
                       children: [
-                        if (totalAmount.toString().length >= 6)
+                        if (totalAmount.toString().length >= 4)
                           Text(
-                              "£${totalAmount.toString().replaceRange(6, totalAmount.toString().length, "")}",
+                              "£${totalAmount.toString().replaceRange(4, totalAmount.toString().length, "")}",
                               style: const TextStyle(
                                   fontSize: 28, fontWeight: FontWeight.bold))
                         else
@@ -360,9 +360,12 @@ class _StaticPaymentState extends State<StaticPayment> {
   }
 
   makeTranscation() async {
-    setState(() {
-      isLoading = true;
-    });
+    if (remarks == null) {
+      setState(() {
+        remarks = "";
+      });
+    }
+
     try {
       var resposeData = await TransactionApi().makeTranscation(
           widget.senderId, widget.qrId, widget.qRamount, remarks);

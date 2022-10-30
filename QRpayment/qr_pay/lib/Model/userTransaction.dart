@@ -4,6 +4,7 @@ class UserTransaction {
   String? receipent;
   double? amount;
   String? date;
+  String? time;
   String? remarks;
 
   UserTransaction(
@@ -12,6 +13,7 @@ class UserTransaction {
     this.receipent,
     this.amount,
     this.date,
+    this.time,
     this.remarks,
   ) {}
 
@@ -34,6 +36,10 @@ class UserTransaction {
   get getDate => this.date;
 
   set setDate(date) => this.date = date;
+
+  get getTime => this.time;
+
+  set setTime(time) => this.time = time;
 
   get getRemarks => this.remarks;
 
