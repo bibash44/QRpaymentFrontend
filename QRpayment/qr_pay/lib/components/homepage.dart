@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/screens/dynamic_dr.dart';
 import 'package:qr_pay/screens/qr_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,11 +31,13 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     // ignore: avoid_unnecessary_containers
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Column(
-          children: [walletCard(), userFunctions()],
+    return SingleChildScrollView(
+      child: Container(
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Column(
+            children: [walletCard(), userFunctions(), widgetFutureWork()],
+          ),
         ),
       ),
     );
@@ -167,7 +171,7 @@ class _HomepageState extends State<Homepage> {
   Widget userFunctions() {
     return Container(
       width: double.infinity,
-      height: 180,
+      height: 110,
       child: Card(
           child: Padding(
         padding: EdgeInsets.all(25),
@@ -190,6 +194,7 @@ class _HomepageState extends State<Homepage> {
                       children: const [
                         Icon(Icons.qr_code_2_sharp,
                             size: 35, color: Colors.green),
+                        SizedBox(height: 5),
                         Text("QR scan",
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.bold))
@@ -206,12 +211,257 @@ class _HomepageState extends State<Homepage> {
                     child: Column(
                       children: const [
                         Icon(Icons.qr_code, size: 35, color: Colors.green),
+                        SizedBox(height: 5),
                         Text("Dynamic QR",
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.bold))
                       ],
                     ),
-                  )
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const QRScan()));
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.creditCard,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Load wallet ",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      )),
+    );
+  }
+
+  Widget widgetFutureWork() {
+    return Container(
+      width: double.infinity,
+      height: 420,
+      child: Card(
+          child: Padding(
+        padding: EdgeInsets.all(25),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Future work for in app merchant payments",
+                  style: TextStyle(fontSize: 12, color: Colors.grey)),
+              const Divider(
+                color: Colors.grey,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.moneyBillAlt,
+                            size: 35, color: Colors.green),
+                        Text("Apply Credit",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.landmark,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Bank transfer",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.landmark,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Load wallet ",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.lightbulb,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Electricity bill",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.shower,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Water bill",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.wifi,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Internet bill ",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.bus,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Bus ticket ",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.train,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Train ticket",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.plane,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Arlines ticket ",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.umbrella,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Insurance ",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.firstAid,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Health",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showInformTiveMessage();
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(FontAwesomeIcons.book,
+                            size: 35, color: Colors.green),
+                        SizedBox(height: 5),
+                        Text("Education ",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                  ),
                 ],
               )
             ],
@@ -219,5 +469,16 @@ class _HomepageState extends State<Homepage> {
         ),
       )),
     );
+  }
+
+  showInformTiveMessage() {
+    Fluttertoast.showToast(
+        msg: "This feature is under development",
+        gravity: ToastGravity.CENTER_LEFT,
+        toastLength: Toast.LENGTH_LONG,
+        timeInSecForIosWeb: 5,
+        backgroundColor: Color.fromARGB(255, 255, 128, 59),
+        textColor: Colors.white,
+        fontSize: 13.0);
   }
 }

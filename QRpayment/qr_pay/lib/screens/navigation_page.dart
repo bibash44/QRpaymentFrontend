@@ -115,7 +115,7 @@ class _NavigationPageState extends State<NavigationPage> {
                     text: 'Statement',
                   ),
                   GButton(
-                    icon: FontAwesomeIcons.userAlt,
+                    icon: FontAwesomeIcons.user,
                     text: 'Profile',
                   ),
                 ],
