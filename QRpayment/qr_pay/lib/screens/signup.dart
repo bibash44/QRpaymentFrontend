@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/Utils/CustomWidgets.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/signin.dart';
@@ -39,14 +40,14 @@ class _SignupState extends State<Signup> {
     redirectLoggedInUserToHomePage();
   }
 
-  void getSuggestion(String query) async {
+  void getAddressSuggestion(String query) async {
     var response = await ExternalFunctions().getPlacesSuggestionAPI(query);
     setState(() {
       placesList = response;
     });
   }
 
-  Widget generateCard(BuildContext context, int index) {
+  Widget generateAddressDisplayCard(BuildContext context, int index) {
     String displayText = placesList[index]['description'];
     return GestureDetector(
       onTap: () {
@@ -99,7 +100,7 @@ class _SignupState extends State<Signup> {
                   decoration: const InputDecoration(
                       labelText: "Fullname",
                       labelStyle: TextStyle(color: Colors.black, fontSize: 16),
-                      prefixIcon: Icon(Icons.person),
+                      prefixIcon: Icon(FontAwesomeIcons.user),
                       iconColor: Colors.black,
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -137,7 +138,7 @@ class _SignupState extends State<Signup> {
                   decoration: const InputDecoration(
                       labelText: "Email",
                       labelStyle: TextStyle(color: Colors.black, fontSize: 16),
-                      prefixIcon: Icon(Icons.email_outlined),
+                      prefixIcon: Icon(FontAwesomeIcons.envelope),
                       iconColor: Colors.black,
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -172,7 +173,7 @@ class _SignupState extends State<Signup> {
                   decoration: const InputDecoration(
                       labelText: "Phone number",
                       labelStyle: TextStyle(color: Colors.black, fontSize: 16),
-                      prefixIcon: Icon(Icons.phone),
+                      prefixIcon: Icon(FontAwesomeIcons.mobileAlt),
                       iconColor: Colors.black,
                       prefixText: '+44',
                       focusedBorder: OutlineInputBorder(
@@ -205,7 +206,7 @@ class _SignupState extends State<Signup> {
                   maxLines: null,
                   onSaved: (newValue) => address = newValue,
                   onChanged: (newValue) {
-                    getSuggestion(newValue);
+                    getAddressSuggestion(newValue);
                     signUpFormKey.currentState!.save();
                     if (signUpFormKey.currentState!.validate()) {
                     } else {}
@@ -213,7 +214,7 @@ class _SignupState extends State<Signup> {
                   decoration: const InputDecoration(
                       labelText: "Address",
                       labelStyle: TextStyle(color: Colors.black, fontSize: 16),
-                      prefixIcon: Icon(Icons.map),
+                      prefixIcon: Icon(FontAwesomeIcons.mapMarkerAlt),
                       iconColor: Colors.black,
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -227,7 +228,7 @@ class _SignupState extends State<Signup> {
                     child: ListView.builder(
                       itemCount: placesList.length,
                       itemBuilder: ((context, index) =>
-                          generateCard(context, index)),
+                          generateAddressDisplayCard(context, index)),
                     ),
                   ),
                 )
@@ -380,7 +381,7 @@ class _SignupState extends State<Signup> {
       Fluttertoast.showToast(
           msg: resposeData['msg'],
           gravity: ToastGravity.CENTER_LEFT,
-            toastLength: Toast.LENGTH_LONG,
+          toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
           backgroundColor: Colors.grey,
           textColor: Colors.white,
@@ -389,7 +390,7 @@ class _SignupState extends State<Signup> {
       Fluttertoast.showToast(
           msg: e.toString(),
           gravity: ToastGravity.CENTER_LEFT,
-            toastLength: Toast.LENGTH_LONG,
+          toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
           backgroundColor: Colors.grey,
           textColor: Colors.white,
@@ -479,23 +480,27 @@ class _SignupState extends State<Signup> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: details.onStepContinue,
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.black,
-                                          padding: const EdgeInsets.all(15),
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5)))),
-                                      child: isLoading
-                                          ? const SpinKitCircle(
-                                              color: Colors.white,
-                                              size: 30,
-                                            )
-                                          : Text(islastStep
-                                              ? "Confirm & submit"
-                                              : "Next"),
-                                    ),
+                                    child: isLoading
+                                        ? const SpinKitCircle(
+                                            color: Colors.black,
+                                            size: 30,
+                                          )
+                                        : ElevatedButton(
+                                            onPressed: details.onStepContinue,
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.black,
+                                                padding:
+                                                    const EdgeInsets.all(15),
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    5)))),
+                                            child: Text(islastStep
+                                                ? "Confirm & submit"
+                                                : "Next"),
+                                          ),
                                   ),
                                   const SizedBox(
                                     width: 15,

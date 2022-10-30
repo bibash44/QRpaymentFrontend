@@ -179,39 +179,40 @@ class _SigninState extends State<Signin> {
 
                           const SizedBox(height: 15),
                           // Signin button
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                padding: const EdgeInsets.all(15),
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                ),
-                              ),
-                              onPressed: () {
-                                if (SigninFormKey.currentState!.validate()) {
-                                  SigninFormKey.currentState!.save();
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  // Calling user Signin function to send user datas
-                                  signInUser(email, password);
-                                }
-                              },
-                              child: isLoading
-                                  ? const SpinKitCircle(
-                                      color: Colors.white,
-                                      size: 30,
-                                    )
-                                  : const Text(
+                          isLoading
+                              ? const SpinKitCircle(
+                                  color: Colors.black,
+                                  size: 30,
+                                )
+                              : SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                      padding: const EdgeInsets.all(15),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      if (SigninFormKey.currentState!
+                                          .validate()) {
+                                        SigninFormKey.currentState!.save();
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        // Calling user Signin function to send user datas
+                                        signInUser(email, password);
+                                      }
+                                    },
+                                    child: const Text(
                                       "Sign In",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 22),
                                     ),
-                            ),
-                          ),
+                                  ),
+                                ),
                           const SizedBox(height: 35),
                           const Text(
                             "Don't have a account ? ",
