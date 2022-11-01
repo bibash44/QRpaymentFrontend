@@ -58,10 +58,11 @@ class ExternalFunctions {
           String _phonenumber = userData['phonenumber'];
           String _address = userData['address'];
           double _totalamount = userData['totalamount'].toDouble();
-          String _usertype = "google";
 
-          await saveUserDataAfterLogin(
-              _id, _fullname, _email, _phonenumber, _address, _totalamount);
+          String token = responseData['token'];
+
+          await saveUserDataAfterLogin(_id, _fullname, _email, _phonenumber,
+              _address, _totalamount, token);
           // ignore: use_build_context_synchronously
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const NavigationPage()));
@@ -89,8 +90,8 @@ class ExternalFunctions {
         context, MaterialPageRoute(builder: (context) => const LandingPage()));
   }
 
-  saveUserDataAfterLogin(
-      _id, _fullname, _email, _phonenumber, _address, _totalamount) async {
+  saveUserDataAfterLogin(_id, _fullname, _email, _phonenumber, _address,
+      _totalamount, token) async {
     SharedPreferences sharedPreferenceUserData =
         await SharedPreferences.getInstance();
 
@@ -100,6 +101,7 @@ class ExternalFunctions {
     sharedPreferenceUserData.setString("_phone", _phonenumber);
     sharedPreferenceUserData.setString("_address", _address);
     sharedPreferenceUserData.setDouble("_totalamount", _totalamount);
+    sharedPreferenceUserData.setString("_token", token);
     sharedPreferenceUserData.setBool("_isUserLoggedIn", true);
   }
 }

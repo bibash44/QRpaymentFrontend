@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 class BASEURL {
   // String baseurl = 'http://localhost:51235/';
   // String baseurl = 'http://10.0.2.2:51235/';
@@ -7,5 +9,14 @@ class BASEURL {
 
   String setBASEURL() {
     return baseurl;
+  }
+
+  getUserToken() async {
+    SharedPreferences sharedPreferenceUserData =
+        await SharedPreferences.getInstance();
+
+    String? token = sharedPreferenceUserData.getString("_token");
+
+    return token;
   }
 }

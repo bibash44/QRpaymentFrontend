@@ -76,7 +76,7 @@ class _ProfileState extends State<Profile> {
   retriveLoggedInUserDatFromServer() async {
     SharedPreferences sharedPreferenceUserData =
         await SharedPreferences.getInstance();
-
+    String? _token = sharedPreferenceUserData.getString("_token");
     String? _userid = sharedPreferenceUserData.getString("_id");
 
     var responseData = await UserApi().getUserData(_userid!);
@@ -159,6 +159,9 @@ class _ProfileState extends State<Profile> {
     var userInputCode = emailVerificationController.text;
 
     if (verificationCode.toString() != userInputCode) {
+      setState(() {
+        isEmailVerifiedLoading = false;
+      });
       Fluttertoast.showToast(
           msg: "Code didnot match , please try again",
           gravity: ToastGravity.CENTER_LEFT,
@@ -529,7 +532,7 @@ class _ProfileState extends State<Profile> {
             children: [
               TextFormField(
                 controller: emailVerificationController,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                     labelText: "Enter verification code",
                     labelStyle: TextStyle(color: Colors.black, fontSize: 16),

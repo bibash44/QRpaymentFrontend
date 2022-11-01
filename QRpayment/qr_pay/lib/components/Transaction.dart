@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/Model/userTransaction.dart';
 import 'package:qr_pay/screens/statement.dart';
 import 'package:qr_pay/services/transactionAPi.dart';
@@ -56,11 +57,33 @@ class _TransactionState extends State<Transaction> {
                     fillColor: const Color.fromARGB(255, 230, 230, 230)),
               ),
             ),
-            Expanded(
-                child: ListView.builder(
-                    itemCount: transactionList.length,
-                    itemBuilder: (context, index) =>
-                        generateTransactionCard(index)))
+            if (transactionList.length > 0)
+              Expanded(
+                  child: ListView.builder(
+                      itemCount: transactionList.length,
+                      itemBuilder: (context, index) =>
+                          generateTransactionCard(index)))
+            else
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "YOU DON'T HAVE ANY TRANSACTION",
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                    SizedBox(height: 10),
+                    Icon(
+                      FontAwesomeIcons.sadTear,
+                      size: 35,
+                    )
+                  ],
+                ),
+              )
           ],
         ),
       ),

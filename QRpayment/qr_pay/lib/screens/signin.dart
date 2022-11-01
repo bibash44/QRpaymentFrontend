@@ -260,8 +260,10 @@ class _SigninState extends State<Signin> {
         String _address = userData['address'];
         double _totalamount = userData['totalamount'].toDouble();
 
-        ExternalFunctions().saveUserDataAfterLogin(
-            _id, _fullname, _email, _phonenumber, _address, _totalamount);
+        String token = responseData['token'];
+
+        ExternalFunctions().saveUserDataAfterLogin(_id, _fullname, _email,
+            _phonenumber, _address, _totalamount, token);
 
         setState(() {
           isLoading = false;

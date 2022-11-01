@@ -50,7 +50,7 @@ class _HomepageState extends State<Homepage> {
 
     String? userid = sharedPreferenceUserData.getString("_id");
 
-    // print("USERIDFORWALLETINFORMATION " + userid!);
+    String? _token = sharedPreferenceUserData.getString("_token");
 
     var responseData = await UserApi().getUserData(userid!);
 
@@ -95,9 +95,9 @@ class _HomepageState extends State<Homepage> {
                   children: [
                     Column(
                       children: [
-                        if (totalAmount.toString().length >= 4)
+                        if (totalAmount.toString().length >= 5)
                           Text(
-                            "£${totalAmount.toString().replaceRange(4, totalAmount.toString().length, "")}",
+                            "£${totalAmount.toString().replaceRange(5, totalAmount.toString().length, "")}",
                             style: const TextStyle(
                                 fontSize: 28, fontWeight: FontWeight.bold),
                           )

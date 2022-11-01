@@ -6,7 +6,7 @@ import 'BASEURL.dart';
 
 class UserApi {
   final url = BASEURL().setBASEURL();
-  Map<String, String> requestHeaders = {
+  var requestHeaders = {
     'Content-type': 'application/json',
     'Accept': 'application/json',
   };
@@ -49,6 +49,13 @@ class UserApi {
       "description": description,
     });
 
+    String token = await BASEURL().getUserToken();
+
+    var authorizationToken = {
+      'Authorization': 'Bearer $token',
+    };
+    requestHeaders.addAll(authorizationToken);
+
     try {
       http.Response response = await http.post(
           Uri.parse('${url}user/sendemail'),
@@ -73,6 +80,12 @@ class UserApi {
   }
 
   Future updateUser(String userid, var requestBody) async {
+    String token = await BASEURL().getUserToken();
+
+    var authorizationToken = {
+      'Authorization': 'Bearer $token',
+    };
+    requestHeaders.addAll(authorizationToken);
     try {
       http.Response response = await http.put(Uri.parse('${url}user/$userid'),
           body: requestBody, headers: requestHeaders);
@@ -123,6 +136,13 @@ class UserApi {
   }
 
   Future getUserData(String userid) async {
+    String token = await BASEURL().getUserToken();
+
+    var authorizationToken = {
+      'Authorization': 'Bearer $token',
+    };
+    requestHeaders.addAll(authorizationToken);
+
     try {
       http.Response response = await http.get(Uri.parse('${url}user/$userid'),
           headers: requestHeaders);
@@ -145,6 +165,13 @@ class UserApi {
   }
 
   Future verifyQrData(String receipentid, String senderid) async {
+    String token = await BASEURL().getUserToken();
+
+    var authorizationToken = {
+      'Authorization': 'Bearer $token',
+    };
+
+    requestHeaders.addAll(authorizationToken);
     var requestBody =
         jsonEncode({"receipentid": receipentid, "senderid": senderid});
 

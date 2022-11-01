@@ -284,9 +284,9 @@ class _StaticPaymentState extends State<StaticPayment> {
                   children: [
                     Column(
                       children: [
-                        if (totalAmount.toString().length >= 4)
+                        if (totalAmount.toString().length >= 5)
                           Text(
-                              "£${totalAmount.toString().replaceRange(4, totalAmount.toString().length, "")}",
+                              "£${totalAmount.toString().replaceRange(5, totalAmount.toString().length, "")}",
                               style: const TextStyle(
                                   fontSize: 28, fontWeight: FontWeight.bold))
                         else

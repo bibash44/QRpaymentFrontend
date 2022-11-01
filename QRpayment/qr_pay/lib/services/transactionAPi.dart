@@ -12,6 +12,12 @@ class TransactionApi {
   };
 
   Future makeTranscation(sender, recipient, amount, remarks) async {
+    String token = await BASEURL().getUserToken();
+
+    var authorizationToken = {
+      'Authorization': 'Bearer $token',
+    };
+    requestHeaders.addAll(authorizationToken);
     var requestBody = jsonEncode({
       "sender": sender,
       "recipient": recipient,
@@ -41,6 +47,12 @@ class TransactionApi {
   }
 
   Future getAllTransaction(String userid) async {
+    String token = await BASEURL().getUserToken();
+
+    var authorizationToken = {
+      'Authorization': 'Bearer $token',
+    };
+    requestHeaders.addAll(authorizationToken);
     try {
       http.Response response = await http.get(
           Uri.parse('${url}transaction/getall/$userid'),
@@ -64,6 +76,12 @@ class TransactionApi {
   }
 
   Future getSingleTransaction(String transactionid) async {
+    String token = await BASEURL().getUserToken();
+
+    var authorizationToken = {
+      'Authorization': 'Bearer $token',
+    };
+    requestHeaders.addAll(authorizationToken);
     try {
       http.Response response = await http.get(
           Uri.parse('${url}transaction/getone/$transactionid'),
