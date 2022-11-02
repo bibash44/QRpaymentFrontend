@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:qr_pay/Utils/CustomWidgets.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/signin.dart';
@@ -155,6 +157,8 @@ class _SignupState extends State<Signup> {
                   ),
                 const SizedBox(height: 15),
                 TextFormField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Please enter your phone number *";
@@ -163,7 +167,6 @@ class _SignupState extends State<Signup> {
                     }
                     return null;
                   },
-                  keyboardType: TextInputType.number,
                   onSaved: (newValue) => phonenumber = newValue,
                   onChanged: (newValue) {
                     signUpFormKey.currentState!.save();

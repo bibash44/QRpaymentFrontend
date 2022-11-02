@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/Model/userTransaction.dart';
 import 'package:qr_pay/screens/statement.dart';
 import 'package:qr_pay/services/transactionAPi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletons/skeletons.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key});
@@ -25,6 +27,7 @@ class _TransactionState extends State<Transaction> {
     UserTransaction("xxx", "xxx", "xxx", 0.0, "xxx", "xxx", "xxx"),
   ];
   String dateAndTime = "2022-10-30T01:13:41.900+00:00";
+  bool isTranscationDataLoading = true;
   _TransactionState() {
     loadTransaction();
   }
@@ -121,58 +124,63 @@ class _TransactionState extends State<Transaction> {
         height: 150,
         child: Padding(
             padding: EdgeInsets.all(5),
-            child: Card(
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    if (userid == transactionList[index].receipent)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: const [
-                          Text("Received",
-                              style: TextStyle(
+            child: isTranscationDataLoading
+                ? const SpinKitCircle(
+                    color: Colors.black,
+                    size: 50,
+                  )
+                : Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (userid == transactionList[index].receipent)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: const [
+                                Text("Received",
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold)),
+                                Icon(
+                                  Icons.arrow_drop_down_outlined,
                                   color: Colors.green,
-                                  fontWeight: FontWeight.bold)),
-                          Icon(
-                            Icons.arrow_drop_down_outlined,
-                            color: Colors.green,
-                          )
-                        ],
-                      )
-                    else
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: const [
-                          Text("Sent",
-                              style: TextStyle(
+                                )
+                              ],
+                            )
+                          else
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: const [
+                                Text("Sent",
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold)),
+                                Icon(
+                                  Icons.arrow_drop_up_outlined,
                                   color: Colors.red,
-                                  fontWeight: FontWeight.bold)),
-                          Icon(
-                            Icons.arrow_drop_up_outlined,
-                            color: Colors.red,
-                          )
+                                )
+                              ],
+                            ),
+                          Text("£${transactionList[index].amount}",
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20)),
+                          const SizedBox(height: 10),
+                          Text(transactionList[index].date.toString(),
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 15)),
+                          const SizedBox(height: 5),
+                          Text(transactionList[index].time.toString(),
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 13)),
                         ],
                       ),
-                    Text("£${transactionList[index].amount}",
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20)),
-                    const SizedBox(height: 10),
-                    Text(transactionList[index].date.toString(),
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 15)),
-                    const SizedBox(height: 5),
-                    Text(transactionList[index].time.toString(),
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 13)),
-                  ],
-                ),
-              ),
-            )),
+                    ),
+                  )),
       ),
     );
   }
@@ -191,20 +199,27 @@ class _TransactionState extends State<Transaction> {
 
     TransactionApi transactionAPi = TransactionApi();
     var data = await transactionAPi.getAllTransaction(_id!);
-    for (var i = 0; i < data['data'].length; i++) {
-      allTransaction.add(UserTransaction(
-          data['data'][i]['_id'],
-          data['data'][i]['sender'],
-          data['data'][i]['recipient'],
-          data['data'][i]['amount'].toDouble(),
-          data['data'][i]['date'].split('T')[0],
-          data['data'][i]['date'].split('T')[1].split('.')[0],
-          data['data'][i]['remarks']));
-    }
+    var responseStatus = data['success'];
 
-    setState(() {
-      transactionList = allTransaction;
-    });
+    if (responseStatus == true) {
+      setState(() {
+        isTranscationDataLoading = false;
+      });
+      for (var i = 0; i < data['data'].length; i++) {
+        allTransaction.add(UserTransaction(
+            data['data'][i]['_id'],
+            data['data'][i]['sender'],
+            data['data'][i]['recipient'],
+            data['data'][i]['amount'].toDouble(),
+            data['data'][i]['date'].split('T')[0],
+            data['data'][i]['date'].split('T')[1].split('.')[0],
+            data['data'][i]['remarks']));
+      }
+
+      setState(() {
+        transactionList = allTransaction.reversed.toList();
+      });
+    }
   }
 
   void searchTransactions(String searchQuery) {
@@ -217,7 +232,7 @@ class _TransactionState extends State<Transaction> {
     }).toList();
 
     setState(() {
-      transactionList = suggestionsList;
+      transactionList = suggestionsList.reversed.toList();
     });
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:qr_pay/Utils/CustomWidgets.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/navigation_page.dart';
@@ -40,10 +42,10 @@ class _StaticPaymentState extends State<StaticPayment> {
           colorScheme:
               ColorScheme.fromSwatch().copyWith(primary: Color(primaryColor))),
       home: Scaffold(
-          appBar: AppBar(title: Text("Payment details")),
+          appBar: AppBar(title: const Text("Payment details")),
           body: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 children: <Widget>[
                   walletCard(widget.senderName, widget.totalamount, context),
@@ -58,43 +60,48 @@ class _StaticPaymentState extends State<StaticPayment> {
                         children: [
                           // For dynamic payment
                           widget.isDynamic
-                              ? SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      if (widget.totalamount <
-                                          widget.qRamount) {
-                                        Fluttertoast.showToast(
-                                            msg: "Not enough balance",
-                                            gravity: ToastGravity.CENTER_LEFT,
-                                            toastLength: Toast.LENGTH_LONG,
-                                            timeInSecForIosWeb: 5,
-                                            backgroundColor: Colors.grey,
-                                            textColor: Colors.white,
-                                            fontSize: 13.0);
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-                                      } else {
-                                        makeTranscation();
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(primaryColor),
-                                        padding: const EdgeInsets.all(20),
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(15)))),
-                                    child: const Align(
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          "Pay",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white),
-                                        )),
-                                  ),
-                                )
+                              ? isLoading
+                                  ? const SpinKitCircle(
+                                      size: 30, color: Colors.black)
+                                  : SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          if (widget.totalamount <
+                                              widget.qRamount) {
+                                            Fluttertoast.showToast(
+                                                msg: "Not enough balance",
+                                                gravity:
+                                                    ToastGravity.CENTER_LEFT,
+                                                toastLength: Toast.LENGTH_LONG,
+                                                timeInSecForIosWeb: 5,
+                                                backgroundColor: Colors.grey,
+                                                textColor: Colors.white,
+                                                fontSize: 13.0);
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                          } else {
+                                            makeTranscation();
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Color(primaryColor),
+                                            padding: const EdgeInsets.all(20),
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(15)))),
+                                        child: const Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "Pay",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            )),
+                                      ),
+                                    )
 
                               //  Static payment
                               : Card(
@@ -109,38 +116,52 @@ class _StaticPaymentState extends State<StaticPayment> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              ThousandsFormatter(
+                                                  allowFraction: true)
+                                            ],
                                             validator: (value) {
-                                              double calcValue =
-                                                  double.parse(value!);
-                                              if (value.isEmpty) {
+                                              if (value!.isEmpty) {
                                                 return "Please enter amount *";
                                               } else if (!RegExp(
                                                       r'^\d{1,5}$|(?=^.{1,5}$)^\d+\.\d{0,3}$')
                                                   .hasMatch(value)) {
                                                 return "Please enter a valid amount *";
-                                              } else if (calcValue >
+                                              } else if (double.parse(value!) >
                                                   widget.totalamount) {
                                                 return "Not enough balance";
-                                              } else if (calcValue <= 0.1) {
+                                              } else if (double.parse(value!) <=
+                                                  0.1) {
                                                 return "Amount must be more than 0.1";
                                               }
                                               return null;
                                             },
-                                            keyboardType: TextInputType.number,
-                                            onSaved: (newValue) =>
-                                                widget.qRamount =
-                                                    double.parse(newValue!),
-                                            onChanged: (newValue) {
-                                              if (widget.qRamount <= 0 ||
-                                                  widget.qRamount == "") {
+                                            onSaved: (newValue) {
+                                              if (newValue!.isEmpty ||
+                                                  newValue == null) {
                                                 setState(() {
                                                   widget.qRamount = 0.0;
                                                 });
+                                              } else {
+                                                setState(() {
+                                                  widget.qRamount =
+                                                      double.parse(newValue);
+                                                });
                                               }
-                                              setState(() {
-                                                widget.qRamount =
-                                                    double.parse(newValue);
-                                              });
+                                            },
+                                            onChanged: (newValue) {
+                                              if (newValue.isEmpty ||
+                                                  newValue == null) {
+                                                setState(() {
+                                                  widget.qRamount = 0.0;
+                                                });
+                                              } else {
+                                                setState(() {
+                                                  widget.qRamount =
+                                                      double.parse(newValue);
+                                                });
+                                              }
 
                                               paymentFormKey.currentState!
                                                   .save();
@@ -210,39 +231,48 @@ class _StaticPaymentState extends State<StaticPayment> {
                                           ),
                                           SizedBox(height: 20),
                                           // Payment button
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: ElevatedButton(
-                                              onPressed: () async {
-                                                if (paymentFormKey.currentState!
-                                                    .validate()) {
-                                                  paymentFormKey.currentState!
-                                                      .save();
-                                                  makeTranscation();
-                                                }
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Color(primaryColor),
-                                                  padding:
-                                                      const EdgeInsets.all(20),
-                                                  shape:
-                                                      const RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          15)))),
-                                              child: const Align(
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    "Confirm and pay",
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        color: Colors.white),
-                                                  )),
-                                            ),
-                                          ),
+                                          isLoading
+                                              ? const SpinKitCircle(
+                                                  size: 30, color: Colors.black)
+                                              : SizedBox(
+                                                  width: double.infinity,
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      setState(() {
+                                                        isLoading = true;
+                                                      });
+                                                      if (paymentFormKey
+                                                          .currentState!
+                                                          .validate()) {
+                                                        paymentFormKey
+                                                            .currentState!
+                                                            .save();
+                                                        makeTranscation();
+                                                      }
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                        backgroundColor:
+                                                            Color(primaryColor),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(20),
+                                                        shape: const RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        15)))),
+                                                    child: const Align(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Text(
+                                                          "Confirm and pay",
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color:
+                                                                  Colors.white),
+                                                        )),
+                                                  ),
+                                                ),
                                         ],
                                       ),
                                     ),

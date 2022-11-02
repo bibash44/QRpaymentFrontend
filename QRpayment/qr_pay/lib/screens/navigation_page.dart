@@ -112,7 +112,7 @@ class _NavigationPageState extends State<NavigationPage> {
                   ),
                   GButton(
                     icon: Icons.event_note_rounded,
-                    text: 'Statement',
+                    text: 'Transactions',
                   ),
                   GButton(
                     icon: FontAwesomeIcons.user,

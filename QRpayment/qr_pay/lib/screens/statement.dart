@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:qr_pay/screens/navigation_page.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/userAPI.dart';
@@ -31,8 +27,6 @@ class _StatementState extends State<Statement> {
   String userFullNameForStatement = "";
   String userEmailForStatement = "";
   double totalAmount = 0.0;
-
-  final pdf = pw.Document();
 
   @override
   void initState() {

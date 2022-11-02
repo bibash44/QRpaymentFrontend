@@ -279,7 +279,7 @@ class _SigninState extends State<Signin> {
             fontSize: 13.0);
 
         // ignore: use_build_context_synchronously
-        Navigator.push(context,
+        Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const NavigationPage()));
       } else if (responseStatus == false) {
         setState(() {

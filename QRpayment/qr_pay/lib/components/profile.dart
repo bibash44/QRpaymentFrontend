@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -29,6 +30,7 @@ class _ProfileState extends State<Profile> {
   bool isUpdateLoading = false;
   bool isEmailSentLoading = false;
   bool isEmailVerifiedLoading = false;
+  bool isProfileDataLoading = true;
 
   String? updateFullname, updatePhonenumber, updateAddress;
 
@@ -83,6 +85,9 @@ class _ProfileState extends State<Profile> {
 
     bool responseStatus = responseData['success'];
     if (responseStatus == true) {
+      setState(() {
+        isProfileDataLoading = false;
+      });
       var userData = responseData['data'];
       // ignore: no_leading_underscores_for_local_identifiers
 
@@ -331,122 +336,124 @@ class _ProfileState extends State<Profile> {
       height: 350,
       child: Padding(
         padding: const EdgeInsets.all(5),
-        child: Card(
-            child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: generateColorizedNameImage(),
-                ),
-                const SizedBox(height: 10),
-                emailverified
-                    ? const Center(
-                        child: Icon(
-                          FontAwesomeIcons.solidCheckCircle,
-                          color: Colors.green,
-                        ),
-                      )
-                    : const Center(
-                        child: Text(
-                          "Not verified",
-                          style: TextStyle(color: Colors.red),
-                        ),
+        child: isProfileDataLoading
+            ? const SpinKitThreeBounce(color: Colors.black, size: 50)
+            : Card(
+                child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: generateColorizedNameImage(),
                       ),
-                const SizedBox(height: 5),
-                // userdetails(),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(FontAwesomeIcons.user),
-                        const SizedBox(width: 15),
-                        Text(fullname,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16)),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    Row(
-                      children: [
-                        const Icon(FontAwesomeIcons.envelope),
-                        const SizedBox(width: 15),
-                        Text(email,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16)),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    Row(
-                      children: [
-                        const Icon(FontAwesomeIcons.mobileAlt),
-                        const SizedBox(width: 15),
-                        if (phonenumber.isEmpty)
-                          InkWell(
-                              child: const Text(
-                                "Phone number found, click here to update ",
-                                style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontSize: 15,
-                                    fontStyle: FontStyle.italic),
+                      const SizedBox(height: 10),
+                      emailverified
+                          ? const Center(
+                              child: Icon(
+                                FontAwesomeIcons.solidCheckCircle,
+                                color: Colors.green,
                               ),
-                              onTap: () {
-                                openUpdateForm();
-                              })
-                        else
-                          Text("+44  $phonenumber",
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    Row(
-                      children: [
-                        const Icon(FontAwesomeIcons.mapMarkerAlt),
-                        const SizedBox(width: 15),
-                        if (address.isEmpty)
-                          InkWell(
-                              child: const Text(
-                                "Address not found, click here to update",
-                                style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontSize: 15,
-                                    fontStyle: FontStyle.italic),
+                            )
+                          : const Center(
+                              child: Text(
+                                "Not verified",
+                                style: TextStyle(color: Colors.red),
                               ),
-                              onTap: () {
-                                openUpdateForm();
-                              })
-                        else if (address.length >= 36)
-                          Text(
-                              address.toString().replaceRange(
-                                  36, address.toString().length, ". . ."),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16))
-                        else
-                          Text(address,
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        )),
+                            ),
+                      const SizedBox(height: 5),
+                      // userdetails(),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(FontAwesomeIcons.user),
+                              const SizedBox(width: 15),
+                              Text(fullname,
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                            ],
+                          ),
+                          const SizedBox(height: 25),
+                          Row(
+                            children: [
+                              const Icon(FontAwesomeIcons.envelope),
+                              const SizedBox(width: 15),
+                              Text(email,
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                            ],
+                          ),
+                          const SizedBox(height: 25),
+                          Row(
+                            children: [
+                              const Icon(FontAwesomeIcons.mobileAlt),
+                              const SizedBox(width: 15),
+                              if (phonenumber.isEmpty)
+                                InkWell(
+                                    child: const Text(
+                                      "Phone number found, click here to update ",
+                                      style: TextStyle(
+                                          color: Colors.blueAccent,
+                                          fontSize: 15,
+                                          fontStyle: FontStyle.italic),
+                                    ),
+                                    onTap: () {
+                                      openUpdateForm();
+                                    })
+                              else
+                                Text("+44  $phonenumber",
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                            ],
+                          ),
+                          const SizedBox(height: 25),
+                          Row(
+                            children: [
+                              const Icon(FontAwesomeIcons.mapMarkerAlt),
+                              const SizedBox(width: 15),
+                              if (address.isEmpty)
+                                InkWell(
+                                    child: const Text(
+                                      "Address not found, click here to update",
+                                      style: TextStyle(
+                                          color: Colors.blueAccent,
+                                          fontSize: 15,
+                                          fontStyle: FontStyle.italic),
+                                    ),
+                                    onTap: () {
+                                      openUpdateForm();
+                                    })
+                              else if (address.length >= 36)
+                                Text(
+                                    address.toString().replaceRange(
+                                        36, address.toString().length, ". . ."),
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16))
+                              else
+                                Text(address,
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              )),
       ),
     );
   }
@@ -643,6 +650,8 @@ class _ProfileState extends State<Profile> {
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   controller: editPhoneNumberController,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -652,7 +661,6 @@ class _ProfileState extends State<Profile> {
                     }
                     return null;
                   },
-                  keyboardType: TextInputType.number,
                   onSaved: (newValue) => updatePhonenumber = newValue,
                   onChanged: (newValue) {
                     updateFormKey.currentState!.save();

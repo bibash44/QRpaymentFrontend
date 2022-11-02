@@ -76,6 +76,7 @@ class _QRScanState extends State<QRScan> {
               leading: BackButton(
                   color: Colors.white,
                   onPressed: () {
+                    controller!.pauseCamera();
                     Navigator.push(
                         context,
                         MaterialPageRoute(

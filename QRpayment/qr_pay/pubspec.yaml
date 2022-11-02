@@ -50,7 +50,8 @@ dependencies:
   qr_flutter: ^4.0.0
   qr_code_scanner: ^1.0.1
   dotted_line: ^3.1.0
-  pdf: 
+  skeletons: ^0.0.3
+  pattern_formatter: ^2.0.0
 
 dev_dependencies:
   flutter_test:

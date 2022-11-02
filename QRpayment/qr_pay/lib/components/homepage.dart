@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_pay/screens/dynamic_qr.dart';
@@ -22,6 +23,7 @@ class _HomepageState extends State<Homepage> {
   bool? isUserLoggedIn;
   String fullname = "";
   double totalAmount = 0.0;
+  bool isWalletDataLoading = true;
 
   // ignore: non_constant_identifier_names
   _HomepageState() {
@@ -56,6 +58,9 @@ class _HomepageState extends State<Homepage> {
 
     bool responseStatus = responseData['success'];
     if (responseStatus == true) {
+      setState(() {
+        isWalletDataLoading = false;
+      });
       var userData = responseData['data'];
       // ignore: no_leading_underscores_for_local_identifiers
       String _fullname = userData['fullname'];
@@ -74,60 +79,66 @@ class _HomepageState extends State<Homepage> {
     return Container(
       width: double.infinity,
       height: 180,
-      child: Card(
-          child: Padding(
-        padding: EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Your wallet ",
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
-              const Divider(
-                color: Colors.grey,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+      child: isWalletDataLoading
+          ? const SpinKitThreeBounce(color: Colors.black, size: 50)
+          : Card(
+              child: Padding(
+              padding: EdgeInsets.all(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      children: [
-                        if (totalAmount.toString().length >= 5)
-                          Text(
-                            "£${totalAmount.toString().replaceRange(5, totalAmount.toString().length, "")}",
-                            style: const TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.bold),
-                          )
-                        else
-                          Text(
-                            "£${totalAmount.toString()}",
-                            style: const TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.bold),
-                          ),
-                        const Text("Balance",
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      ],
+                    const Text("Your wallet ",
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const Divider(
+                      color: Colors.grey,
                     ),
-                    Column(
-                      children: [
-                        generateColorizedNameImage(),
-                        SizedBox(height: 15),
-                        // ignore: prefer_interpolation_to_compose_strings
-                        Text(fullname,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              if (totalAmount.toString().length >= 5)
+                                Text(
+                                  "£${totalAmount.toString().replaceRange(5, totalAmount.toString().length, "")}",
+                                  style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              else
+                                Text(
+                                  "£${totalAmount.toString()}",
+                                  style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              const Text("Balance",
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey)),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              generateColorizedNameImage(),
+                              SizedBox(height: 15),
+                              // ignore: prefer_interpolation_to_compose_strings
+                              Text(fullname,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      )),
+            )),
     );
   }
 

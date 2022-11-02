@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:qr_pay/screens/navigation_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -159,23 +160,39 @@ class _LoadWalletFromCardState extends State<LoadWalletFromCard> {
                         const SizedBox(height: 20),
                         TextFormField(
                           validator: (value) {
-                            double calcValue = double.parse(value!);
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return "Please enter amount *";
                             } else if (!RegExp(
                                     r'^\d{1,5}$|(?=^.{1,5}$)^\d+\.\d{0,3}$')
                                 .hasMatch(value)) {
                               return "Please enter a valid amount *";
-                            } else if (calcValue <= 0.1) {
+                            } else if (double.parse(value!) <= 0.1) {
                               return "Amount must be more than 0.1";
                             }
                             return null;
                           },
                           keyboardType: TextInputType.number,
-                          onSaved: (newValue) =>
-                              amount = double.parse(newValue!),
+                          onSaved: (newValue) {
+                            if (newValue!.isEmpty || newValue == null) {
+                              setState(() {
+                                amount = 0.0;
+                              });
+                            } else {
+                              setState(() {
+                                amount = double.parse(newValue);
+                              });
+                            }
+                          },
                           onChanged: (newValue) {
-                            amount = double.parse(newValue);
+                            if (newValue.isEmpty || newValue == null) {
+                              setState(() {
+                                amount = 0.0;
+                              });
+                            } else {
+                              setState(() {
+                                amount = double.parse(newValue);
+                              });
+                            }
 
                             loadWalletFormKey.currentState!.save();
                             if (loadWalletFormKey.currentState!.validate()) {
