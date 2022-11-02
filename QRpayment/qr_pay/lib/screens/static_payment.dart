@@ -10,6 +10,9 @@ import 'package:qr_pay/Utils/CustomWidgets.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/navigation_page.dart';
 import 'package:qr_pay/services/transactionAPi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/userAPI.dart';
 
 class StaticPayment extends StatefulWidget {
   String qrId;
@@ -34,6 +37,15 @@ class _StaticPaymentState extends State<StaticPayment> {
   final paymentFormKey = GlobalKey<FormState>();
   String? remarks;
   bool isLoading = false;
+  bool isemailVerified = false;
+  bool showAlertMessageBox = false;
+
+  @override
+  void initState() {
+    getLoggedInUserData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -48,6 +60,7 @@ class _StaticPaymentState extends State<StaticPayment> {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: <Widget>[
+                  accountNotVerifiedAlertBox(),
                   walletCard(widget.senderName, widget.totalamount, context),
                   const SizedBox(height: 20),
                   paymentDetailsCard(),
@@ -238,9 +251,6 @@ class _StaticPaymentState extends State<StaticPayment> {
                                                   width: double.infinity,
                                                   child: ElevatedButton(
                                                     onPressed: () async {
-                                                      setState(() {
-                                                        isLoading = true;
-                                                      });
                                                       if (paymentFormKey
                                                           .currentState!
                                                           .validate()) {
@@ -389,6 +399,42 @@ class _StaticPaymentState extends State<StaticPayment> {
     );
   }
 
+  Widget accountNotVerifiedAlertBox() {
+    return showAlertMessageBox
+        ? Padding(
+            padding: EdgeInsets.all(5),
+            child: Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color.fromRGBO(243, 205, 210, 1)),
+                child: Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(" Please verify the account to make  payment ",
+                          style: TextStyle(
+                              color: Color.fromRGBO(161, 65, 90, 1),
+                              fontWeight: FontWeight.bold)),
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              showAlertMessageBox = false;
+                            });
+                          },
+                          icon: const Icon(
+                            FontAwesomeIcons.timesCircle,
+                            color: Color.fromRGBO(161, 65, 90, 1),
+                          ))
+                    ],
+                  ),
+                )),
+          )
+        : Container();
+  }
+
   makeTranscation() async {
     if (remarks == null) {
       setState(() {
@@ -396,41 +442,60 @@ class _StaticPaymentState extends State<StaticPayment> {
       });
     }
 
-    try {
-      var resposeData = await TransactionApi().makeTranscation(
-          widget.senderId, widget.qrId, widget.qRamount, remarks);
+    if (isemailVerified) {
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        var resposeData = await TransactionApi().makeTranscation(
+            widget.senderId, widget.qrId, widget.qRamount, remarks);
 
-      bool responseStatus = resposeData['success'];
-      if (responseStatus == true) {
+        bool responseStatus = resposeData['success'];
+        if (responseStatus == true) {
+          Fluttertoast.showToast(
+              msg: resposeData['msg'],
+              gravity: ToastGravity.CENTER_LEFT,
+              toastLength: Toast.LENGTH_LONG,
+              timeInSecForIosWeb: 5,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              fontSize: 13.0);
+          setState(() {
+            isLoading = false;
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NavigationPage()));
+          });
+        } else if (responseStatus == false) {
+          Fluttertoast.showToast(
+              msg: resposeData['msg'],
+              gravity: ToastGravity.CENTER_LEFT,
+              toastLength: Toast.LENGTH_LONG,
+              timeInSecForIosWeb: 5,
+              backgroundColor: Colors.grey,
+              textColor: Colors.white,
+              fontSize: 13.0);
+          setState(() {
+            isLoading = false;
+          });
+        }
+      } catch (e) {
         Fluttertoast.showToast(
-            msg: resposeData['msg'],
-            gravity: ToastGravity.CENTER_LEFT,
-            toastLength: Toast.LENGTH_LONG,
-            timeInSecForIosWeb: 5,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 13.0);
-        setState(() {
-          isLoading = false;
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const NavigationPage()));
-        });
-      } else if (responseStatus == false) {
-        Fluttertoast.showToast(
-            msg: resposeData['msg'],
+            msg: e.toString(),
             gravity: ToastGravity.CENTER_LEFT,
             toastLength: Toast.LENGTH_LONG,
             timeInSecForIosWeb: 5,
             backgroundColor: Colors.grey,
             textColor: Colors.white,
             fontSize: 13.0);
-        setState(() {
-          isLoading = false;
-        });
       }
-    } catch (e) {
+    } else {
+      setState(() {
+        showAlertMessageBox = true;
+      });
       Fluttertoast.showToast(
-          msg: e.toString(),
+          msg: "Please verifiy account to make the payment",
           gravity: ToastGravity.CENTER_LEFT,
           toastLength: Toast.LENGTH_LONG,
           timeInSecForIosWeb: 5,
@@ -438,5 +503,32 @@ class _StaticPaymentState extends State<StaticPayment> {
           textColor: Colors.white,
           fontSize: 13.0);
     }
+  }
+
+  getLoggedInUserData() async {
+    SharedPreferences sharedPreferenceUserData =
+        await SharedPreferences.getInstance();
+
+    String? userid = sharedPreferenceUserData.getString("_id");
+    var responseData = await UserApi().getUserData(userid!);
+
+    bool responseStatus = responseData['success'];
+    if (responseStatus == true) {
+      var userData = responseData['data'];
+
+      bool _isemailVerified = userData['emailverified'];
+
+      setState(() {
+        isemailVerified = _isemailVerified;
+      });
+
+      if (!isemailVerified) {
+        setState(() {
+          showAlertMessageBox = true;
+        });
+      }
+      // ignore: use_build_context_synchronously
+
+    } else if (responseStatus == false) {}
   }
 }

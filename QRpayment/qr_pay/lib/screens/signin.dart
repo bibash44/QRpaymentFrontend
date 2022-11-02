@@ -259,11 +259,11 @@ class _SigninState extends State<Signin> {
         String _phonenumber = userData['phonenumber'];
         String _address = userData['address'];
         double _totalamount = userData['totalamount'].toDouble();
-
+        bool _emailverified = userData['emailverified'];
         String token = responseData['token'];
 
         ExternalFunctions().saveUserDataAfterLogin(_id, _fullname, _email,
-            _phonenumber, _address, _totalamount, token);
+            _phonenumber, _address, _totalamount, _emailverified, token);
 
         setState(() {
           isLoading = false;
