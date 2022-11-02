@@ -77,10 +77,7 @@ class _QRScanState extends State<QRScan> {
                   color: Colors.white,
                   onPressed: () {
                     controller!.pauseCamera();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NavigationPage()));
+                    Navigator.pop(context);
                   }),
               bottom: const TabBar(
                 tabs: [

@@ -105,31 +105,31 @@ class _TransactionState extends State<Transaction> {
       isReceived = true;
     }
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Statement(
-                      userIdToReceiveData!,
-                      isReceived!,
-                      transactionList[index].id!,
-                      transactionList[index].amount!,
-                      transactionList[index].date!,
-                      transactionList[index].time!,
-                      transactionList[index].remarks!,
-                    )));
-      },
-      child: Container(
-        height: 150,
-        child: Padding(
-            padding: EdgeInsets.all(5),
-            child: isTranscationDataLoading
-                ? const SpinKitCircle(
-                    color: Colors.black,
-                    size: 50,
-                  )
-                : Card(
+    return isTranscationDataLoading
+        ? const SpinKitThreeBounce(
+            color: Colors.black,
+            size: 50,
+          )
+        : GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Statement(
+                            userIdToReceiveData!,
+                            isReceived!,
+                            transactionList[index].id!,
+                            transactionList[index].amount!,
+                            transactionList[index].date!,
+                            transactionList[index].time!,
+                            transactionList[index].remarks!,
+                          )));
+            },
+            child: Container(
+              height: 150,
+              child: Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Card(
                     child: Padding(
                       padding: EdgeInsets.all(10),
                       child: Column(
@@ -170,19 +170,31 @@ class _TransactionState extends State<Transaction> {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20)),
                           const SizedBox(height: 10),
-                          Text(transactionList[index].date.toString(),
-                              style: const TextStyle(
-                                  color: Colors.grey, fontSize: 15)),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_month, size: 12),
+                              const SizedBox(width: 5),
+                              Text(transactionList[index].date.toString(),
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 15)),
+                            ],
+                          ),
                           const SizedBox(height: 5),
-                          Text(transactionList[index].time.toString(),
-                              style: const TextStyle(
-                                  color: Colors.grey, fontSize: 13)),
+                          Row(
+                            children: [
+                              const Icon(Icons.watch_later_rounded, size: 12),
+                              const SizedBox(width: 5),
+                              Text(transactionList[index].time.toString(),
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 13)),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   )),
-      ),
-    );
+            ),
+          );
   }
 
   void loadTransaction() async {

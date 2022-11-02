@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:qr_pay/components/profile.dart';
 import 'package:qr_pay/screens/dynamic_qr.dart';
 import 'package:qr_pay/screens/load_wallet_from_card.dart';
+import 'package:qr_pay/screens/navigation_page.dart';
 import 'package:qr_pay/screens/qr_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -155,7 +157,10 @@ class _HomepageState extends State<Homepage> {
         // print(vaccinationCentreList[index].id);
       },
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => NavigationPage()));
+        },
         child: googleuser
             ? CircleAvatar(
                 radius: 30, // Image radius
