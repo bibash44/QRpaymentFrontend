@@ -398,7 +398,7 @@ class _ProfileState extends State<Profile> {
                         if (phonenumber.isEmpty)
                           InkWell(
                               child: const Text(
-                                "Phone number found, click here to update ",
+                                "Phone number not found, click here to update ",
                                 style: TextStyle(
                                     color: Colors.blueAccent,
                                     fontSize: 15,
