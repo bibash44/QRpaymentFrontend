@@ -14,7 +14,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:qr_pay/Utils/ExternalFunctions.dart';
 import 'package:qr_pay/screens/navigation_page.dart';
-import 'package:qr_pay/screens/static_payment.dart';
+import 'package:qr_pay/screens/payment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/userAPI.dart';
@@ -390,7 +390,7 @@ class _QRScanState extends State<QRScan> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => StaticPayment(qrId, qrFullname, qRamount,
+                builder: (context) => Payment(qrId, qrFullname, qRamount,
                     fullname!, senderid!, totalamount, isDynamic)));
 
         // ignore: use_build_context_synchronously

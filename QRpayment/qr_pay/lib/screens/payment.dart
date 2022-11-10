@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/userAPI.dart';
 
-class StaticPayment extends StatefulWidget {
+class Payment extends StatefulWidget {
   String qrId;
   String qrFullname;
   double qRamount;
@@ -23,16 +23,16 @@ class StaticPayment extends StatefulWidget {
   double totalamount;
   bool isDynamic;
 
-  StaticPayment(this.qrId, this.qrFullname, this.qRamount, this.senderName,
+  Payment(this.qrId, this.qrFullname, this.qRamount, this.senderName,
       this.senderId, this.totalamount, this.isDynamic,
       {Key? key})
       : super(key: key);
 
   @override
-  State<StaticPayment> createState() => _StaticPaymentState();
+  State<Payment> createState() => _PaymentState();
 }
 
-class _StaticPaymentState extends State<StaticPayment> {
+class _PaymentState extends State<Payment> {
   int primaryColor = 0xFFCF2027;
   final paymentFormKey = GlobalKey<FormState>();
   String? remarks;
@@ -387,7 +387,7 @@ class _StaticPaymentState extends State<StaticPayment> {
                   style: const TextStyle(fontSize: 18, color: Colors.grey)),
               const SizedBox(height: 20),
               const Text(
-                  "Note : Once the payment has been made, it can be reverted back, please send only to the person you know ",
+                  "Note : Once the payment has been made, it cannot be reverted back, please send only to the person you know ",
                   style: TextStyle(
                       fontSize: 15,
                       color: Color.fromARGB(255, 186, 186, 186),
