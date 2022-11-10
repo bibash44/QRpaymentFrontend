@@ -67,7 +67,10 @@ class ExternalFunctions {
           // ignore: use_build_context_synchronously
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const NavigationPage()));
-        } else if (responseStatus == false) {}
+        } else if (responseStatus == false) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const LandingPage()));
+        }
       } catch (e) {}
 
       // ignore: use_build_context_synchronously
