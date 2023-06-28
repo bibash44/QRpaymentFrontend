@@ -273,7 +273,7 @@ class _QRScanState extends State<QRScan> {
       "amount": 0.0,
       "dynamic": false
     };
-    return QrImage(data: jsonEncode(data), size: 250);
+    return QrImageView(data: jsonEncode(data), size: 250);
   }
 
   Widget _buildQrView(BuildContext context) {
@@ -394,7 +394,6 @@ class _QRScanState extends State<QRScan> {
                     fullname!, senderid!, totalamount, isDynamic)));
 
         // ignore: use_build_context_synchronously
-
       } else if (responseStatus == false) {
         setState(() {
           qrResult = null;

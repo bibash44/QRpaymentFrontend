@@ -157,7 +157,7 @@ class _DynamicQrState extends State<DynamicQr> {
       "amount": amount,
       "dynamic": true
     };
-    return QrImage(data: jsonEncode(data), size: 250);
+    return QrImageView(data: jsonEncode(data), size: 250);
   }
 
   getAndSetLoggedInUserDetails() async {
